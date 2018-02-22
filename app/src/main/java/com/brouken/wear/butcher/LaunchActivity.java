@@ -1,6 +1,7 @@
 package com.brouken.wear.butcher;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -9,6 +10,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.input.WearableButtons;
@@ -17,6 +19,7 @@ import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class LaunchActivity extends WearableActivity {
 
@@ -76,6 +79,8 @@ public class LaunchActivity extends WearableActivity {
 
         mProgressbarAsync = new ProgressBarAsync();
         mProgressbarAsync.execute();
+
+        vibrate();
     }
 
     private class ProgressBarAsync extends AsyncTask<Void, Integer, Void>{
@@ -130,18 +135,62 @@ public class LaunchActivity extends WearableActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-        Log.d("TEST", "keyCode = " + keyCode);
+        Log.d("TEST", "onKeyDown");
+
 
         if (keyCode == KeyEvent.KEYCODE_STEM_1) {
             Log.d("TEST", "KEYCODE_STEM_1");
+            event.startTracking();
             return true;
         }
 
+        /*
         if (keyCode == KeyEvent.KEYCODE_STEM_2) {
             Log.d("TEST", "KEYCODE_STEM_2");
             return true;
         }
+        */
 
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+
+        Log.d("TEST", "onKeyLongPress");
+        toast("long");
+
+        /*
+        if (keyCode == KeyEvent.KEYCODE_STEM_1) {
+            Log.d("TEST", "KEYCODE_STEM_1");
+            return true;
+        }
+        */
+
+        return super.onKeyLongPress(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+
+        Log.d("TEST", "onKeyUp");
+        toast("short");
+
+        return super.onKeyUp(keyCode, event);
+    }
+
+    private void toast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
+    private void vibrate() {
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        long[] pattern = {0, 100};
+        vibrator.vibrate(pattern, -1);
+    }
+
+    private void vibrate2() {
+        //getactivi
+        //performHapticFeedback();
     }
 }
