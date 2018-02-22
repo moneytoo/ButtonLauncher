@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="Configuration">
+    <Preference
+        android:key="pref_font"
+        android:title="Font">
+        <intent
+            android:targetPackage="com.brouken.wear.face.justtime"
+            android:targetClass="com.brouken.wear.face.justtime.FontPickerActivity"/>
+    </Preference>
+    <Preference
+        android:key="pref_font_size"
+        android:title="Font size">
+    </Preference>
+</PreferenceScreen>
