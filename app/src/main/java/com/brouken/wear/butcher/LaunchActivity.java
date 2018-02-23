@@ -28,7 +28,7 @@ public class LaunchActivity extends WearableActivity {
     private ProgressBar mProgressBar;
 
     private Handler mHandler = new Handler();
-    private int progress = 3000;
+    private long countdownStart;
 
     private int mProgressStatus = 3000;
     private ProgressBarAsync mProgressbarAsync;
@@ -90,6 +90,7 @@ public class LaunchActivity extends WearableActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            countdownStart = System.currentTimeMillis();
             mRunning = true;
         }
 
@@ -99,7 +100,10 @@ public class LaunchActivity extends WearableActivity {
                 try {
                     if(!mRunning)
                         break;
-                    mProgressStatus -= 50;
+
+                    int diff = (int) (System.currentTimeMillis() - countdownStart);
+
+                    mProgressStatus = mProgressBar.getMax() - diff;
 
                     publishProgress(mProgressStatus);
                     Thread.sleep(50);
