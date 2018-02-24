@@ -3,6 +3,7 @@ package com.brouken.wear.butcher;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
@@ -11,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.input.WearableButtons;
@@ -33,12 +35,20 @@ public class LaunchActivity extends WearableActivity {
     private int mProgressStatus = 3000;
     private ProgressBarAsync mProgressbarAsync;
 
+    private String actionDefault;
+    private String actionButton1;
+    private String actionButton1Long;
+
+    boolean longPressed = false;
+
     //private static AsyncTask<Void, Void, Void> countdownTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
+
+        loadConfig();
 
         //mTextView = (TextView) findViewById(R.id.text);
         mImageView = findViewById(R.id.imageView);
@@ -48,9 +58,17 @@ public class LaunchActivity extends WearableActivity {
         //setAmbientEnabled();
 
         try {
-            Drawable icon = getPackageManager().getApplicationIcon("com.brouken.wear.payenabler");
+            String pkg = actionDefault.split("/")[0];
+            String cls = actionDefault.split("/")[1];
+
+            ComponentName componentName = new ComponentName(pkg, cls);
+
+            //TODO: not an activity icon!
+            //getPackageManager().getActivityIcon(componentName)
+
+            Drawable icon = getPackageManager().getActivityIcon(componentName);
             mImageView.setImageDrawable(icon);
-        } catch (PackageManager.NameNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -77,10 +95,23 @@ public class LaunchActivity extends WearableActivity {
 
         Log.d("TEST", "intent action = " + getIntent().getAction());
 
+
+        boolean launchedViaAssist = false;
+        if (intent.getAction().equals(Intent.ACTION_ASSIST))
+            launchedViaAssist = true;
+
+        if (!launchedViaAssist)
+            vibrate();
+
         mProgressbarAsync = new ProgressBarAsync();
         mProgressbarAsync.execute();
+    }
 
-        vibrate();
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        mProgressbarAsync.cancel(true);
     }
 
     private class ProgressBarAsync extends AsyncTask<Void, Integer, Void>{
@@ -133,6 +164,9 @@ public class LaunchActivity extends WearableActivity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             //mTglStart.setChecked(false);
+
+            if (mProgressStatus <= 0)
+                launchApp(actionDefault);
         }
     }
 
@@ -148,13 +182,6 @@ public class LaunchActivity extends WearableActivity {
             return true;
         }
 
-        /*
-        if (keyCode == KeyEvent.KEYCODE_STEM_2) {
-            Log.d("TEST", "KEYCODE_STEM_2");
-            return true;
-        }
-        */
-
         return super.onKeyDown(keyCode, event);
     }
 
@@ -162,14 +189,13 @@ public class LaunchActivity extends WearableActivity {
     public boolean onKeyLongPress(int keyCode, KeyEvent event) {
 
         Log.d("TEST", "onKeyLongPress");
-        toast("long");
 
-        /*
         if (keyCode == KeyEvent.KEYCODE_STEM_1) {
-            Log.d("TEST", "KEYCODE_STEM_1");
+            //Log.d("TEST", "KEYCODE_STEM_1");
+            longPressed = true;
+            launchApp(actionButton1Long);
             return true;
         }
-        */
 
         return super.onKeyLongPress(keyCode, event);
     }
@@ -178,7 +204,12 @@ public class LaunchActivity extends WearableActivity {
     public boolean onKeyUp(int keyCode, KeyEvent event) {
 
         Log.d("TEST", "onKeyUp");
-        toast("short");
+
+        if (keyCode == KeyEvent.KEYCODE_STEM_1) {
+            if (!longPressed)
+                launchApp(actionButton1);
+            return true;
+        }
 
         return super.onKeyUp(keyCode, event);
     }
@@ -188,13 +219,37 @@ public class LaunchActivity extends WearableActivity {
     }
 
     private void vibrate() {
+        // TODO: FIX don't vibrate when launched via HOME/ASSIST
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        long[] pattern = {0, 100};
+        long[] pattern = {0, 30};
         vibrator.vibrate(pattern, -1);
     }
 
-    private void vibrate2() {
-        //getactivi
-        //performHapticFeedback();
+    private void launchApp(String app) {
+        if (app == null)
+            return;
+
+        String pkg = app.split("/")[0];
+        String cls = app.split("/")[1];
+        launchApp(pkg, cls);
+    }
+
+    private void launchApp(String pkg, String cls) {
+        ComponentName componentName = new ComponentName(pkg, cls);
+        Intent intent=new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setComponent(componentName);
+        startActivity(intent);
+
+        vibrate();
+        finish();
+    }
+
+    private void loadConfig() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        actionDefault = sharedPreferences.getString("home_default", null);
+        actionButton1 = sharedPreferences.getString("home_button1", null);
+        actionButton1Long = sharedPreferences.getString("home_button1long", null);
     }
 }

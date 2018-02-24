@@ -23,9 +23,11 @@ public class AppPickerActivity extends Activity {
     private WearableRecyclerView mWearableRecyclerView;
     private CustomRecyclerAdapter mCustomRecyclerAdapter;
 
-    List<ResolveInfo> pkgAppsList;
+    private List<ResolveInfo> pkgAppsList;
 
     Context mContext;
+
+    String pref;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,12 +35,20 @@ public class AppPickerActivity extends Activity {
 
         mContext = this;
 
+        pref = getIntent().getStringExtra("pref");
+
         //loadFonts();
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         pkgAppsList = mContext.getPackageManager().queryIntentActivities( mainIntent, 0);
 
+        for (ResolveInfo resolveInfo : pkgAppsList) {
+            /*if (resolveInfo.activityInfo.packageName.equals(getPackageName()))
+                pkgAppsList.remove(resolveInfo);*/
+        }
+
         Collections.sort(pkgAppsList, new ResolveInfo.DisplayNameComparator(mContext.getPackageManager()));
+        pkgAppsList.add(0, null);
 
         setContentView(R.layout.activity_app);
 
@@ -75,8 +85,17 @@ public class AppPickerActivity extends Activity {
     }
 
 
-    public void itemSelected(String item) {
+    public void itemSelected(String pkg, String cls) {
         //Log.d("FONT", item);
+        Intent intent=new Intent();
+        intent.putExtra("pref", pref);
+
+        if (pkg != null && cls != null)
+            intent.putExtra("app", pkg + "/" + cls);
+
+        intent.putExtra("pkg", pkg);
+        intent.putExtra("cls", cls);
+        setResult(RESULT_OK, intent);
         finish();
     }
 
@@ -120,12 +139,26 @@ public class AppPickerActivity extends Activity {
             viewHolder.mTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //mAppPickerActivity.itemSelected(mDataSet[position]);
+                    if (mDataSet[position] == null) {
+                        mAppPickerActivity.itemSelected(null, null);
+                        return;
+                    }
+
+                    String pkg = mDataSet[position].activityInfo.packageName;
+                    String cls = mDataSet[position].activityInfo.name;
+                    mAppPickerActivity.itemSelected(pkg, cls);
+
                 }
             });
 
             // Replaces content of view with correct element from data set
             //viewHolder.mTextView.setText(mDataSet[position]);
+            if (mDataSet[position] == null) {
+                viewHolder.mTextView.setText("None");
+
+                return;
+            }
+
             viewHolder.mTextView.setText(mDataSet[position].activityInfo.loadLabel(mAppPickerActivity.getPackageManager()).toString());
             viewHolder.mImageView.setImageDrawable(mDataSet[position].loadIcon(mAppPickerActivity.getPackageManager()));
 
