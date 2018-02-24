@@ -119,12 +119,12 @@ public class ConfigActivity extends Activity {
         }
 
         public void savePreferences(String key, String value) {
-            if (value == null)
-                return;
-
             SharedPreferences.Editor editor = mSharedPreferences.edit();
-            editor.putString(key, value);
-            editor.commit();
+            if (value == null)
+                editor.remove(key);
+            else
+                editor.putString(key, value);
+            editor.apply();
         }
 
         private String getAppLabel(String pkg, String cls) {

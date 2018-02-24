@@ -149,6 +149,10 @@ public class LaunchActivity extends WearableActivity {
                     Thread.sleep(50);
                 } catch(Exception e){
                     e.printStackTrace();
+
+                    // test
+                    mProgressStatus = 0;
+                    mRunning = false;
                 }
             }
             return null;
@@ -157,6 +161,7 @@ public class LaunchActivity extends WearableActivity {
         @Override
         protected void onCancelled() {
             super.onCancelled();
+            Log.d("TEST", "onCancelled");
             mRunning = false;
         }
 
