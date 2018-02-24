@@ -78,10 +78,12 @@ public class LaunchActivity extends WearableActivity {
 
         Log.d("TEST", "count = " + count);
 
-        WearableButtons.ButtonInfo buttonInfo =
-                WearableButtons.getButtonInfo(this, KeyEvent.KEYCODE_STEM_1);
+        WearableButtons.ButtonInfo buttonInfo = WearableButtons.getButtonInfo(this, KeyEvent.KEYCODE_STEM_1);
 
-        //Log.d("TEST", "count = " + buttonInfo.toString());
+        //String btn = WearableButtons.getButtonLabel(this, KeyEvent.KEYCODE_STEM_1).toString();
+        //mImageView.setImageDrawable(WearableButtons.getButtonIcon(this, KeyEvent.KEYCODE_STEM_1));
+
+        //Log.d("TEST", "desc = " + btn);
 
         Intent intent = getIntent();
 
@@ -104,6 +106,13 @@ public class LaunchActivity extends WearableActivity {
             vibrate();
 
         mProgressbarAsync = new ProgressBarAsync();
+        //mProgressbarAsync.execute();
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
         mProgressbarAsync.execute();
     }
 

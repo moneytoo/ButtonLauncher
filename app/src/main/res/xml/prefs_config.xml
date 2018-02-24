@@ -2,26 +2,20 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="Configuration">
-    <!--<Preference
-        android:key="pref_font"
-        android:title="Font">
-        <intent
-            android:targetPackage="com.brouken.wear.face.justtime"
-            android:targetClass="com.brouken.wear.face.justtime.FontPickerActivity"/>
-    </Preference>-->
     <PreferenceCategory
-        android:title="Long press home">
+        android:title="Long press primary button">
         <Preference
             android:key="home_default"
-            android:title="Default action">
+            android:title="Default action"
+            android:icon="@drawable/ic_background">
         </Preference>
         <Preference
             android:key="home_button1"
-            android:title="Button 1 press">
+            android:title="Short press">
         </Preference>
         <Preference
             android:key="home_button1long"
-            android:title="Button 1 long press">
+            android:title="Long press">
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

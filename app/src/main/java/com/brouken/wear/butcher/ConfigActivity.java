@@ -5,11 +5,18 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ScaleDrawable;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.wearable.input.WearableButtons;
+import android.view.Gravity;
+import android.view.KeyEvent;
 
 import java.util.List;
 
@@ -78,6 +85,19 @@ public class ConfigActivity extends Activity {
 
                 summary = getAppLabel(pkg, cls);
             }
+
+            Drawable background = ContextCompat.getDrawable(getContext(), R.drawable.ic_background);
+            Drawable icon = ContextCompat.getDrawable(getContext(), R.drawable.ic_circle);
+            if (pref.contains("button1")) {
+                icon = WearableButtons.getButtonIcon(getContext(), KeyEvent.KEYCODE_STEM_1);
+            }
+
+            LayerDrawable finalDrawable = new LayerDrawable(new Drawable[] {background, icon});
+            int inset = (int)(icon.getIntrinsicWidth() / 5f * 2f);
+            finalDrawable.setLayerInset(1, inset, inset, inset, inset);
+
+            preference.setIcon(finalDrawable);
+
 
             updateSummary(pref, summary);
 
