@@ -46,6 +46,10 @@ public class ConfigActivity extends Activity {
             setupPref("home_default");
             setupPref("home_button1");
             setupPref("home_button1long");
+
+            setupPref("extra_default");
+            setupPref("extra_button1");
+            setupPref("extra_button1long");
         }
 
         @Override

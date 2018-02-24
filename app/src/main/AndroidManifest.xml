@@ -43,10 +43,6 @@
         <activity
             android:name=".ConfigActivity"
             android:label="Button Launcher Config">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

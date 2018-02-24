@@ -11,11 +11,27 @@
         </Preference>
         <Preference
             android:key="home_button1"
-            android:title="Short press">
+            android:title="+ Short press">
         </Preference>
         <Preference
             android:key="home_button1long"
-            android:title="Long press">
+            android:title="+ Long press">
+        </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Secondary button press">
+        <Preference
+            android:key="extra_default"
+            android:title="Default action"
+            android:icon="@drawable/ic_background">
+        </Preference>
+        <Preference
+            android:key="extra_button1"
+            android:title="+ Short press">
+        </Preference>
+        <Preference
+            android:key="extra_button1long"
+            android:title="+ Long press">
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>
