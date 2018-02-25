@@ -39,7 +39,6 @@ public class AppPickerActivity extends Activity {
 
         pref = getIntent().getStringExtra("pref");
 
-        //loadFonts();
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         pkgAppsList = mContext.getPackageManager().queryIntentActivities( mainIntent, 0);
@@ -90,7 +89,6 @@ public class AppPickerActivity extends Activity {
 
 
     public void itemSelected(String pkg, String cls) {
-        //Log.d("FONT", item);
         Intent intent=new Intent();
         intent.putExtra("pref", pref);
 
@@ -105,7 +103,6 @@ public class AppPickerActivity extends Activity {
 
     private static final class CustomRecyclerAdapter extends WearableRecyclerView.Adapter<CustomRecyclerAdapter.ViewHolder> {
 
-        private static final String TAG = "CustomRecyclerAdapter";
         private ResolveInfo[] mDataSet;
         private AppPickerActivity mAppPickerActivity;
 
@@ -165,9 +162,6 @@ public class AppPickerActivity extends Activity {
 
             viewHolder.mTextView.setText(mDataSet[position].activityInfo.loadLabel(mAppPickerActivity.getPackageManager()).toString());
             viewHolder.mImageView.setImageDrawable(mDataSet[position].loadIcon(mAppPickerActivity.getPackageManager()));
-
-            /*if (typefaces.get(position) != null)
-                viewHolder.mTextView.setTypeface(typefaces.get(position));*/
         }
 
         // Return the size of your dataset (invoked by the layout manager)
