@@ -11,11 +11,9 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.wearable.activity.WearableActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import static com.brouken.wear.butcher.Utils.log;
 
@@ -196,11 +194,11 @@ public class LaunchActivity extends WearableActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
-        Log.d("TEST", "onKeyDown");
+        log("onKeyDown");
 
 
         if (keyCode == KeyEvent.KEYCODE_STEM_1) {
-            Log.d("TEST", "KEYCODE_STEM_1");
+            log("KEYCODE_STEM_1");
             event.startTracking();
             return true;
         }
@@ -211,7 +209,7 @@ public class LaunchActivity extends WearableActivity {
     @Override
     public boolean onKeyLongPress(int keyCode, KeyEvent event) {
 
-        Log.d("TEST", "onKeyLongPress");
+        log("onKeyLongPress");
 
         if (keyCode == KeyEvent.KEYCODE_STEM_1) {
             longPressed = true;
@@ -228,7 +226,7 @@ public class LaunchActivity extends WearableActivity {
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
 
-        Log.d("TEST", "onKeyUp");
+        log("onKeyUp");
 
         if (keyCode == KeyEvent.KEYCODE_STEM_1) {
             if (!longPressed) {
