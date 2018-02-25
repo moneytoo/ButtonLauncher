@@ -44,19 +44,13 @@ public class ConfigActivity extends Activity {
 
             mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-            PreferenceCategory categoryHome = (PreferenceCategory) findPreference("home");
-            Preference preference = new Preference(getContext());
-            //preference.setKey("");
-            preference.setTitle("Test");
-            categoryHome.addPreference(preference);
+            setupPref("home_default", "home", "default");
+            setupPref("home_button1", "home", "button1");
+            setupPref("home_button1long", "home", "button1long");
 
-            setupPref("home_default");
-            setupPref("home_button1");
-            setupPref("home_button1long");
-
-            setupPref("extra_default");
-            setupPref("extra_button1");
-            setupPref("extra_button1long");
+            setupPref("extra_default", "extra", "default");
+            setupPref("extra_button1", "extra", "button1");
+            setupPref("extra_button1long", "extra", "button1long");
         }
 
         @Override
@@ -84,8 +78,22 @@ public class ConfigActivity extends Activity {
             preference.setSummary(name);
         }
 
-        private void setupPref(final String pref) {
-            Preference preference = findPreference(pref);
+        private void setupPref(final String pref, String shortcutTrigger, String shortcutAdditional) {
+
+            PreferenceCategory categoryHome = (PreferenceCategory) findPreference(shortcutTrigger);
+            Preference preference = new Preference(getContext());
+
+            preference.setKey(pref);
+            if (shortcutAdditional.equals("default"))
+                preference.setTitle("Default action");
+            else if (shortcutAdditional.endsWith("long"))
+                preference.setTitle("+ Long press");
+            else
+                preference.setTitle("+ Short press");
+
+            categoryHome.addPreference(preference);
+
+            //Preference preference = findPreference(pref);
 
             String app = loadValue(pref);
             String summary = null;
