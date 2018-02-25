@@ -1,10 +1,14 @@
 package com.brouken.wear.butcher;
 
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.input.WearableButtons;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -15,25 +19,47 @@ public class HelpActivity extends WearableActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_help);
+        setContentView(R.layout.activity_help2);
 
         TextView textView = findViewById(R.id.textView);
 
-        String labelPrimary = WearableButtons.getButtonLabel(this, KeyEvent.KEYCODE_STEM_PRIMARY).toString().toLowerCase();
+        if (getResources().getConfiguration().isScreenRound()) {
+            ScrollView scrollView = findViewById(R.id.scrollView);
+            LinearLayout layoutTop = findViewById(R.id.layoutTop);
+            LinearLayout layoutBottom = findViewById(R.id.layoutBottom);
 
-        ArrayList<String> labels = new ArrayList<String>();
-        int buttonCount = WearableButtons.getButtonCount(this);
-        for (int i = 1; i < buttonCount; i++) {
-            String label = WearableButtons.getButtonLabel(this, KeyEvent.KEYCODE_STEM_PRIMARY + i).toString().toLowerCase();
-            labels.add(label);
+            Point size = new Point();
+            getWindowManager().getDefaultDisplay().getSize(size);
+            int padding = size.x / 10;
+
+            scrollView.setPadding(padding, 0, padding, 0);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int)(padding * 2.5f));
+            layoutTop.setLayoutParams(params);
+            layoutBottom.setLayoutParams(params);
         }
 
-        String labelSecondary = TextUtils.join(", ", labels);
+
+        String labelPrimary = "";
+        String labelSecondary = "";
+        int buttonCount = WearableButtons.getButtonCount(this);
+
+        if (buttonCount >= 1) {
+            labelPrimary = "(" + WearableButtons.getButtonLabel(this, KeyEvent.KEYCODE_STEM_PRIMARY).toString().toLowerCase() + ") ";
+
+            ArrayList<String> labels = new ArrayList<String>();
+            for (int i = 1; i < buttonCount; i++) {
+                String label = WearableButtons.getButtonLabel(this, KeyEvent.KEYCODE_STEM_PRIMARY + i).toString().toLowerCase();
+                labels.add(label);
+            }
+
+            labelSecondary = "(" + TextUtils.join(", ", labels) + ") ";
+        }
+
 
         textView.setText("Start Button Launcher from your launcher to open this configuration screen.\n" +
                 "\n" +
-                "Long press your watch primary button (" + labelPrimary + ") to use the first set of shortcut combos.\n" +
+                "Long press your watch primary button " + labelPrimary + "to use the first set of shortcut combos.\n" +
                 "\n" +
-                "Map your other watch button (" + labelSecondary + ") in system settings to Button Launcher to use the other set of shortcut combos. Unfortunately it is not possible to detect what specific custom button was used for launch.");
+                "Map your other watch button " + labelSecondary + "in system settings to Button Launcher to use the other set of shortcut combos. Unfortunately it is not possible to detect what specific custom button was used for launch.");
     }
 }
