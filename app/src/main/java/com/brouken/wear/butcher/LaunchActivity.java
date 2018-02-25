@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import static com.brouken.wear.butcher.Utils.log;
 public class LaunchActivity extends WearableActivity {
 
     private ImageView mImageView;
+    private ImageView mImageView2;
+    private ImageView mImageView3;
     private ProgressBar mProgressBar;
 
     private long countdownStart;
@@ -41,11 +44,13 @@ public class LaunchActivity extends WearableActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_launch);
+        setContentView(R.layout.activity_launch2);
 
         loadConfig();
 
         mImageView = findViewById(R.id.imageView);
+        //mImageView2 = findViewById(R.id.imageView2);
+        //mImageView3 = findViewById(R.id.imageView3);
         mProgressBar = findViewById(R.id.progressBar);
 
         // Enables Always-on
@@ -76,16 +81,9 @@ public class LaunchActivity extends WearableActivity {
                 vibrate();
 
             try {
-                String[] app;
+                loadIcon();
 
-                if (launchedViaAssist)
-                    app = actionHomeDefault.split("/");
-                else
-                    app = actionExtraDefault.split("/");
-
-                ComponentName componentName = new ComponentName(app[0], app[1]);
-                Drawable icon = getPackageManager().getActivityIcon(componentName);
-                mImageView.setImageDrawable(icon);
+                //mImageView2.setImageDrawable(icon);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -93,6 +91,42 @@ public class LaunchActivity extends WearableActivity {
 
         mProgressbarAsync = new ProgressBarAsync();
         //mProgressbarAsync.execute();
+    }
+
+    private void loadIcon() throws PackageManager.NameNotFoundException {
+        String[] app;
+
+        if (launchedViaAssist)
+            app = actionHomeDefault.split("/");
+        else
+            app = actionExtraDefault.split("/");
+
+        ComponentName componentName = new ComponentName(app[0], app[1]);
+        Drawable icon = getPackageManager().getActivityIcon(componentName);
+        mImageView.setImageDrawable(icon);
+
+        ////
+        /*
+        if (launchedViaAssist)
+            app = actionHomeButton1.split("/");
+        else
+            app = actionExtraButton1.split("/");
+
+        componentName = new ComponentName(app[0], app[1]);
+        icon = getPackageManager().getActivityIcon(componentName);
+        mImageView2.setImageDrawable(icon);
+
+        ////
+
+        if (launchedViaAssist)
+            app = actionHomeButton1Long.split("/");
+        else
+            app = actionExtraButton1Long.split("/");
+
+        componentName = new ComponentName(app[0], app[1]);
+        icon = getPackageManager().getActivityIcon(componentName);
+        mImageView3.setImageDrawable(icon);
+        */
     }
 
     @Override
