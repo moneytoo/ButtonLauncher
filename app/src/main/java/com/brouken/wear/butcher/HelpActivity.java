@@ -19,7 +19,7 @@ public class HelpActivity extends WearableActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_help2);
+        setContentView(R.layout.activity_help);
 
         TextView textView = findViewById(R.id.textView);
 
@@ -54,12 +54,13 @@ public class HelpActivity extends WearableActivity {
 
             labelSecondary = "(" + TextUtils.join(", ", labels) + ") ";
         }
-
-
+        
         textView.setText("Start Button Launcher from your launcher to open this configuration screen.\n" +
                 "\n" +
                 "Long press your watch primary button " + labelPrimary + "to use the first set of shortcut combos.\n" +
                 "\n" +
-                "Map your other watch button " + labelSecondary + "in system settings to Button Launcher to use the other set of shortcut combos. Unfortunately it is not possible to detect what specific custom button was used for launch.");
+                "Map your other watch button " + labelSecondary + "in system settings to Button Launcher to use the other set of shortcut combos. Unfortunately it is not possible to detect what specific custom button was used for launch.\n" +
+                "\n" +
+                "The Default action is what app will be launched if no secondary button is pressed (short or long) before time for launch runs out.");
     }
 }

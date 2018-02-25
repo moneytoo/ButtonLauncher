@@ -10,6 +10,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ScaleDrawable;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -42,6 +43,12 @@ public class ConfigActivity extends Activity {
             addPreferencesFromResource(R.xml.prefs_config);
 
             mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+            PreferenceCategory categoryHome = (PreferenceCategory) findPreference("home");
+            Preference preference = new Preference(getContext());
+            //preference.setKey("");
+            preference.setTitle("Test");
+            categoryHome.addPreference(preference);
 
             setupPref("home_default");
             setupPref("home_button1");
@@ -101,7 +108,6 @@ public class ConfigActivity extends Activity {
             finalDrawable.setLayerInset(1, inset, inset, inset, inset);
 
             preference.setIcon(finalDrawable);
-
 
             updateSummary(pref, summary);
 

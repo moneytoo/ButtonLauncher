@@ -1,34 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<android.support.wear.widget.BoxInsetLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_grey"
-    android:padding="@dimen/box_inset_layout_padding"
-    tools:context="com.brouken.wear.butcher.LaunchActivity"
-    tools:deviceIds="wear">
+    tools:context=".HelpActivity"
+    tools:deviceIds="wear_round">
 
-    <FrameLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/inner_frame_layout_padding"
-        app:boxedEdges="all">
+        android:id="@+id/scrollView">
 
-        <ScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:orientation="vertical"
+                android:id="@+id/layoutTop"/>
+
+            <TextView android:id="@+id/textView"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView"/>
+                />
 
-        </ScrollView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:orientation="vertical"
+                android:id="@+id/layoutBottom"/>
 
+        </LinearLayout>
 
-    </FrameLayout>
-</android.support.wear.widget.BoxInsetLayout>
-
+    </ScrollView>
+</RelativeLayout>

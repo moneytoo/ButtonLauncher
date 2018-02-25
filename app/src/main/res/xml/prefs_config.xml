@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="Configuration">
     <PreferenceCategory
-        android:title="Long press primary button">
+        android:title="Long press primary button"
+        android:key="home">
         <Preference
             android:key="home_default"
             android:title="Default action">
