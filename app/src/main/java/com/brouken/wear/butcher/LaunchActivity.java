@@ -12,6 +12,7 @@ import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.wearable.activity.WearableActivity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -94,7 +95,7 @@ public class LaunchActivity extends WearableActivity {
     }
 
     private void loadIcon() throws PackageManager.NameNotFoundException {
-        String[] app;
+        final String[] app;
 
         if (launchedViaAssist)
             app = actionHomeDefault.split("/");
@@ -104,6 +105,14 @@ public class LaunchActivity extends WearableActivity {
         ComponentName componentName = new ComponentName(app[0], app[1]);
         Drawable icon = getPackageManager().getActivityIcon(componentName);
         mImageView.setImageDrawable(icon);
+
+        mImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchApp(app[0], app[1]);
+                mProgressbarAsync.cancel(true);
+            }
+        });
 
         ////
         /*
