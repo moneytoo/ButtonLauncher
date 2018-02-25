@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import static com.brouken.wear.butcher.Utils.log;
+
 public class LaunchActivity extends WearableActivity {
 
     //private TextView mTextView;
@@ -164,7 +166,7 @@ public class LaunchActivity extends WearableActivity {
         @Override
         protected void onCancelled() {
             super.onCancelled();
-            Log.d("TEST", "onCancelled");
+            log("onCancelled");
             mRunning = false;
         }
 
@@ -273,9 +275,11 @@ public class LaunchActivity extends WearableActivity {
 
     private void loadConfig() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         actionHomeDefault = sharedPreferences.getString("home_default", null);
         actionHomeButton1 = sharedPreferences.getString("home_button1", null);
         actionHomeButton1Long = sharedPreferences.getString("home_button1long", null);
+
         actionExtraDefault = sharedPreferences.getString("extra_default", null);
         actionExtraButton1 = sharedPreferences.getString("extra_button1", null);
         actionExtraButton1Long = sharedPreferences.getString("extra_button1long", null);
