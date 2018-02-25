@@ -130,11 +130,16 @@ public class ConfigActivity extends Activity {
         }
 
         private Drawable getIconForButton(int button) {
+            Drawable icon = null;
             Drawable background = ContextCompat.getDrawable(getContext(), R.drawable.ic_background);
-            Drawable icon = ContextCompat.getDrawable(getContext(), R.drawable.ic_circle);
-            try {
-                icon = WearableButtons.getButtonIcon(getContext(), KeyEvent.KEYCODE_STEM_PRIMARY + button);
-            } catch (Exception e) {}
+
+            if (button >= 1) {
+                try {
+                    icon = WearableButtons.getButtonIcon(getContext(), KeyEvent.KEYCODE_STEM_PRIMARY + button);
+                } catch (Exception e) {
+                }
+            } else
+                icon = ContextCompat.getDrawable(getContext(), R.drawable.ic_circle);
 
             LayerDrawable finalDrawable = new LayerDrawable(new Drawable[] {background, icon});
             int inset = (int)(icon.getIntrinsicWidth() / 5f * 2f);
