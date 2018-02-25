@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.ScaleDrawable;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
@@ -16,7 +15,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.wearable.input.WearableButtons;
-import android.view.Gravity;
 import android.view.KeyEvent;
 
 import java.util.List;
@@ -44,13 +42,7 @@ public class ConfigActivity extends Activity {
 
             mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-            setupPref("home_default", "home", "default");
-            setupPref("home_button1", "home", "button1");
-            setupPref("home_button1long", "home", "button1long");
-
-            setupPref("extra_default", "extra", "default");
-            setupPref("extra_button1", "extra", "button1");
-            setupPref("extra_button1long", "extra", "button1long");
+            setupPrefs();
         }
 
         @Override
@@ -68,7 +60,6 @@ public class ConfigActivity extends Activity {
 
                 updateSummary(pref, name);
             }
-
         }
 
         private void updateSummary(String pref, String name) {
@@ -78,7 +69,25 @@ public class ConfigActivity extends Activity {
             preference.setSummary(name);
         }
 
-        private void setupPref(final String pref, String shortcutTrigger, String shortcutAdditional) {
+        private void setupPrefs() {
+            int buttonCount = WearableButtons.getButtonCount(getContext());
+
+            if (buttonCount >= 1)
+                setupPref("home", "default", 0);
+
+            if (buttonCount >= 2) {
+                setupPref("home", "button1", 1);
+                setupPref("home", "button1long", 1);
+
+                setupPref("extra", "default", 0);
+                setupPref("extra", "button1", 1);
+                setupPref("extra", "button1long", 1);
+            }
+        }
+
+        private void setupPref(String shortcutTrigger, String shortcutAdditional, int buttonIndex) {
+
+            final String pref = shortcutTrigger + "_" + shortcutAdditional;
 
             PreferenceCategory categoryHome = (PreferenceCategory) findPreference(shortcutTrigger);
             Preference preference = new Preference(getContext());
@@ -93,8 +102,6 @@ public class ConfigActivity extends Activity {
 
             categoryHome.addPreference(preference);
 
-            //Preference preference = findPreference(pref);
-
             String app = loadValue(pref);
             String summary = null;
 
@@ -105,17 +112,7 @@ public class ConfigActivity extends Activity {
                 summary = getAppLabel(pkg, cls);
             }
 
-            Drawable background = ContextCompat.getDrawable(getContext(), R.drawable.ic_background);
-            Drawable icon = ContextCompat.getDrawable(getContext(), R.drawable.ic_circle);
-            if (pref.contains("button1") && WearableButtons.getButtonCount(getContext()) >= 2) {
-                icon = WearableButtons.getButtonIcon(getContext(), KeyEvent.KEYCODE_STEM_1);
-            }
-
-            LayerDrawable finalDrawable = new LayerDrawable(new Drawable[] {background, icon});
-            int inset = (int)(icon.getIntrinsicWidth() / 5f * 2f);
-            finalDrawable.setLayerInset(1, inset, inset, inset, inset);
-
-            preference.setIcon(finalDrawable);
+            preference.setIcon(getIconForButton(buttonIndex));
 
             updateSummary(pref, summary);
 
@@ -130,6 +127,20 @@ public class ConfigActivity extends Activity {
                     return true;
                 }
             });
+        }
+
+        private Drawable getIconForButton(int button) {
+            Drawable background = ContextCompat.getDrawable(getContext(), R.drawable.ic_background);
+            Drawable icon = ContextCompat.getDrawable(getContext(), R.drawable.ic_circle);
+            try {
+                icon = WearableButtons.getButtonIcon(getContext(), KeyEvent.KEYCODE_STEM_PRIMARY + button);
+            } catch (Exception e) {}
+
+            LayerDrawable finalDrawable = new LayerDrawable(new Drawable[] {background, icon});
+            int inset = (int)(icon.getIntrinsicWidth() / 5f * 2f);
+            finalDrawable.setLayerInset(1, inset, inset, inset, inset);
+
+            return finalDrawable;
         }
 
         private String loadValue(String key) {

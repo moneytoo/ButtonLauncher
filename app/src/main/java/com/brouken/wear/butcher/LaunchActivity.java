@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.wearable.activity.WearableActivity;
@@ -19,13 +18,10 @@ import static com.brouken.wear.butcher.Utils.log;
 
 public class LaunchActivity extends WearableActivity {
 
-    //private TextView mTextView;
     private ImageView mImageView;
     private ProgressBar mProgressBar;
 
-    private Handler mHandler = new Handler();
     private long countdownStart;
-
     private int mProgressStatus = 3000;
     private ProgressBarAsync mProgressbarAsync;
 
@@ -42,8 +38,6 @@ public class LaunchActivity extends WearableActivity {
 
     boolean longPressed = false;
 
-    //private static AsyncTask<Void, Void, Void> countdownTask;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +45,6 @@ public class LaunchActivity extends WearableActivity {
 
         loadConfig();
 
-        //mTextView = (TextView) findViewById(R.id.text);
         mImageView = findViewById(R.id.imageView);
         mProgressBar = findViewById(R.id.progressBar);
 
@@ -195,7 +188,6 @@ public class LaunchActivity extends WearableActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         log("onKeyDown");
-
 
         if (keyCode == KeyEvent.KEYCODE_STEM_1) {
             log("KEYCODE_STEM_1");
