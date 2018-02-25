@@ -6,8 +6,7 @@
         android:title="Long press primary button">
         <Preference
             android:key="home_default"
-            android:title="Default action"
-            android:icon="@drawable/ic_background">
+            android:title="Default action">
         </Preference>
         <Preference
             android:key="home_button1"
@@ -22,8 +21,7 @@
         android:title="Secondary button press">
         <Preference
             android:key="extra_default"
-            android:title="Default action"
-            android:icon="@drawable/ic_background">
+            android:title="Default action">
         </Preference>
         <Preference
             android:key="extra_button1"
@@ -32,6 +30,16 @@
         <Preference
             android:key="extra_button1long"
             android:title="+ Long press">
+        </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Other">
+        <Preference
+            android:title="Help"
+            android:icon="@drawable/ic_help">
+            <intent
+                android:targetPackage="com.brouken.wear.butcher"
+                android:targetClass="com.brouken.wear.butcher.HelpActivity"/>
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

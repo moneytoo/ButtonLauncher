@@ -257,6 +257,9 @@ public class LaunchActivity extends WearableActivity {
     }
 
     private void launchApp(String pkg, String cls) {
+        if (isFinishing())
+            return;
+
         ComponentName componentName = new ComponentName(pkg, cls);
         Intent intent=new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);

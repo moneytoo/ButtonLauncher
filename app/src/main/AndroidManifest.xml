@@ -37,9 +37,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AppPickerActivity">
 
-        </activity>
+        <activity android:name=".AppPickerActivity" />
+
+        <activity android:name=".HelpActivity" />
+
         <activity
             android:name=".ConfigActivity"
             android:label="Button Launcher Config">

@@ -92,7 +92,7 @@ public class ConfigActivity extends Activity {
 
             Drawable background = ContextCompat.getDrawable(getContext(), R.drawable.ic_background);
             Drawable icon = ContextCompat.getDrawable(getContext(), R.drawable.ic_circle);
-            if (pref.contains("button1")) {
+            if (pref.contains("button1") && WearableButtons.getButtonCount(getContext()) >= 2) {
                 icon = WearableButtons.getButtonIcon(getContext(), KeyEvent.KEYCODE_STEM_1);
             }
 
