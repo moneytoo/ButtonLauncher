@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.brouken.wear.butcher.Utils.log;
@@ -43,9 +44,11 @@ public class AppPickerActivity extends Activity {
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         pkgAppsList = mContext.getPackageManager().queryIntentActivities( mainIntent, 0);
 
-        for (ResolveInfo resolveInfo : pkgAppsList) {
-            /*if (resolveInfo.activityInfo.packageName.equals(getPackageName()))
-                pkgAppsList.remove(resolveInfo);*/
+        Iterator<ResolveInfo> resolveInfoIterator = pkgAppsList.iterator();
+        while (resolveInfoIterator.hasNext())  {
+            ResolveInfo resolveInfo = resolveInfoIterator.next();
+            if (resolveInfo.activityInfo.packageName.equals(getPackageName()))
+                resolveInfoIterator.remove();
         }
 
         Collections.sort(pkgAppsList, new ResolveInfo.DisplayNameComparator(mContext.getPackageManager()));
