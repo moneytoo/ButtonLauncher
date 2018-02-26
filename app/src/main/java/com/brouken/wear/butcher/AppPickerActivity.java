@@ -156,7 +156,7 @@ public class AppPickerActivity extends Activity {
             //viewHolder.mTextView.setText(mDataSet[position]);
             if (mDataSet[position] == null) {
                 viewHolder.mTextView.setText("None");
-
+                viewHolder.mImageView.setImageDrawable(null);
                 return;
             }
 
