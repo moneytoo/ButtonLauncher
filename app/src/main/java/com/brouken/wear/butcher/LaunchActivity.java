@@ -106,24 +106,6 @@ public class LaunchActivity extends WearableActivity {
             if (!launchedViaAssist)
                 vibrate();
 
-            /*
-            long currentTime = System.currentTimeMillis();
-            long timeDiff = Math.abs(currentTime - latestStart);
-            latestStart = currentTime;
-
-            if (timeDiff < 3000) {
-                if (latestStartViaAssist && actionHomeButton0Long != null) {
-                    latestStart = 0;
-                    launchApp(actionHomeButton0Long, false);
-                } else if (!latestStartViaAssist && actionExtraButton0Long != null) {
-                    latestStart = 0;
-                    launchApp(actionExtraButton0Long, false);
-                }
-            }
-
-            latestStartViaAssist = launchedViaAssist;
-            */
-
             try {
                 loadIcon();
 
@@ -203,12 +185,6 @@ public class LaunchActivity extends WearableActivity {
     }
 
     @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        log("onPostResume()");
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
         log("onStop()");
@@ -224,7 +200,7 @@ public class LaunchActivity extends WearableActivity {
     }
 
     private void startCountdown() {
-        animator.setDuration(3000); // 0.5 second
+        animator.setDuration(3000);
         animator.setInterpolator(new LinearInterpolator());
 
         animator.addListener(new Animator.AnimatorListener() {
@@ -308,7 +284,7 @@ public class LaunchActivity extends WearableActivity {
 
     private void vibrate() {
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        long[] pattern = {0, 30};
+        long[] pattern = {0, 20};
         vibrator.vibrate(pattern, -1);
     }
 
@@ -323,7 +299,7 @@ public class LaunchActivity extends WearableActivity {
 
     private void launchApp(String pkg, String cls, boolean vibrate) {
         if (animator != null)
-            animator.cancel();
+            animator.pause();
 
         if (isFinishing())
             return;
