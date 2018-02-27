@@ -36,6 +36,10 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:title="Other">
+        <SwitchPreference
+            android:key="vibrate"
+            android:title="Vibrate"
+            android:defaultValue="true"/>
         <Preference
             android:title="Help"
             android:icon="@drawable/ic_help">

@@ -6,10 +6,12 @@ import android.animation.ObjectAnimator;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.wearable.activity.WearableActivity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -30,6 +32,8 @@ public class LaunchActivity extends WearableActivity {
 
     private boolean launchedViaAssist = false;
     private boolean launchedViaCustom = false;
+
+    private boolean vibrate = true;
 
     boolean longPressed = false;
 
@@ -62,8 +66,10 @@ public class LaunchActivity extends WearableActivity {
 
         mLaunchActions = new LaunchActions(this, launchedViaAssist);
 
-        if (!isFinishing())
+        if (!isFinishing()) {
             loadIcon();
+            loadConfig();
+        }
     }
 
     @Override
@@ -217,6 +223,9 @@ public class LaunchActivity extends WearableActivity {
     }
 
     private void vibrate() {
+        if (!vibrate)
+            return;
+
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         long[] pattern = {0, 20};
         vibrator.vibrate(pattern, -1);
@@ -248,5 +257,11 @@ public class LaunchActivity extends WearableActivity {
         if (vibrate)
             vibrate();
         finish();
+    }
+
+    private void loadConfig() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        vibrate = sharedPreferences.getBoolean("vibrate", vibrate);
     }
 }
