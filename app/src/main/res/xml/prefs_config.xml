@@ -5,37 +5,20 @@
     <PreferenceCategory
         android:title="Long press primary button"
         android:key="home">
-        <!--<Preference
-            android:key="home_default"
-            android:title="Default action">
-        </Preference>
-        <Preference
-            android:key="home_button1"
-            android:title="+ Short press">
-        </Preference>
-        <Preference
-            android:key="home_button1long"
-            android:title="+ Long press">
-        </Preference>-->
     </PreferenceCategory>
     <PreferenceCategory
         android:title="Secondary button press"
         android:key="extra">
-        <!--<Preference
-            android:key="extra_default"
-            android:title="Default action">
-        </Preference>
-        <Preference
-            android:key="extra_button1"
-            android:title="+ Short press">
-        </Preference>
-        <Preference
-            android:key="extra_button1long"
-            android:title="+ Long press">
-        </Preference>-->
     </PreferenceCategory>
     <PreferenceCategory
         android:title="Other">
+        <ListPreference
+            android:key="timeout"
+            android:title="Timeout"
+            android:defaultValue="3000"
+            android:icon="@drawable/ic_timeout"
+            android:entries="@array/pref_timeout_titles"
+            android:entryValues="@array/pref_timeout_values"/>
         <SwitchPreference
             android:key="vibrate"
             android:title="Vibrate"

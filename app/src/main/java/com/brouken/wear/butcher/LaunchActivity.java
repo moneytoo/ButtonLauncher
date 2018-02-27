@@ -34,6 +34,7 @@ public class LaunchActivity extends WearableActivity {
     private boolean launchedViaCustom = false;
 
     private boolean vibrate = true;
+    private int timeout = 3000;
 
     boolean longPressed = false;
 
@@ -45,14 +46,15 @@ public class LaunchActivity extends WearableActivity {
         setContentView(R.layout.activity_launch2);
 
         log("onCreate()");
-        //loadConfig();
+        loadConfig();
 
         mImageView = findViewById(R.id.imageView);
         //mImageView2 = findViewById(R.id.imageView2);
         //mImageView3 = findViewById(R.id.imageView3);
         mProgressBar = findViewById(R.id.progressBar);
 
-        animator = ObjectAnimator.ofInt(mProgressBar, "progress", 3000);
+        animator = ObjectAnimator.ofInt(mProgressBar, "progress", timeout);
+        mProgressBar.setMax(timeout);
 
         // Enables Always-on
         //setAmbientEnabled();
@@ -158,7 +160,7 @@ public class LaunchActivity extends WearableActivity {
     }
 
     private void startCountdown() {
-        animator.setDuration(3000);
+        animator.setDuration(timeout);
         animator.setInterpolator(new LinearInterpolator());
 
         animator.addListener(new AnimatorListenerAdapter() {
@@ -263,5 +265,6 @@ public class LaunchActivity extends WearableActivity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         vibrate = sharedPreferences.getBoolean("vibrate", vibrate);
+        timeout = Integer.parseInt(sharedPreferences.getString("timeout", Integer.toString(timeout)));
     }
 }

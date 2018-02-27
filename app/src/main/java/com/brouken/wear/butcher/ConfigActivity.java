@@ -8,6 +8,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
@@ -43,6 +44,7 @@ public class ConfigActivity extends Activity {
             mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 
             setupPrefs();
+            setupPrefTimeout();
         }
 
         @Override
@@ -191,6 +193,48 @@ public class ConfigActivity extends Activity {
             List<ResolveInfo> pkgAppsList = getContext().getPackageManager().queryIntentActivities( mainIntent, 0);
             return pkgAppsList.get(0).activityInfo.loadLabel(getContext().getPackageManager()).toString();
         }
+
+        private void setupPrefTimeout() {
+            Preference preference = findPreference("timeout");
+
+            /*preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+
+                    return true;
+                }
+            });*/
+
+            preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+            sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
+                    PreferenceManager.getDefaultSharedPreferences(getContext()).getString(preference.getKey(), "3000"));
+        }
+
+        private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object value) {
+                String stringValue = value.toString();
+
+                if (preference instanceof ListPreference) {
+                    // For list preferences, look up the correct display value in
+                    // the preference's 'entries' list.
+                    ListPreference listPreference = (ListPreference) preference;
+                    int index = listPreference.findIndexOfValue(stringValue);
+
+                    // Set the summary to reflect the new value.
+                    preference.setSummary(
+                            index >= 0
+                                    ? listPreference.getEntries()[index]
+                                    : null);
+
+                } else {
+                    // For all other preferences, set the summary to the value's
+                    // simple string representation.
+                    preference.setSummary(stringValue);
+                }
+                return true;
+            }
+        };
     }
 
 
