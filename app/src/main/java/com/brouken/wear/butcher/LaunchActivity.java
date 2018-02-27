@@ -1,6 +1,7 @@
 package com.brouken.wear.butcher;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.ComponentName;
 import android.content.Context;
@@ -174,12 +175,11 @@ public class LaunchActivity extends WearableActivity {
         animator.setDuration(3000);
         animator.setInterpolator(new LinearInterpolator());
 
-        animator.addListener(new Animator.AnimatorListener() {
+        animator.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationStart(Animator animator) {}
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
 
-            @Override
-            public void onAnimationEnd(Animator animator) {
                 log("onAnimationEnd()");
 
                 if (launchedViaAssist)
@@ -187,12 +187,6 @@ public class LaunchActivity extends WearableActivity {
                 else
                     launchApp(actionExtraDefault, true);
             }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {}
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {}
         });
 
         animator.start();
