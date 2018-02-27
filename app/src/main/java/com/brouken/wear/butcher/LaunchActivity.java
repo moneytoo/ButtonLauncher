@@ -130,8 +130,10 @@ public class LaunchActivity extends WearableActivity {
         if (mLaunchActions.hasOnlyDefaultAction()) {
             String app = mLaunchActions.getAppForButton(-1, false);
             launchApp(app, !launchedViaAssist);
-        } else
-            startCountdown();
+        } else {
+            if (mLaunchActions.hasDefaultAction())
+                startCountdown();
+        }
     }
 
     @Override

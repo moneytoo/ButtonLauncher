@@ -49,6 +49,13 @@ public class LaunchActions {
             return false;
     }
 
+    public boolean hasDefaultAction() {
+        if (actionDefault == null)
+            return false;
+        else
+            return true;
+    }
+
     private void loadConfig() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 
