@@ -72,20 +72,23 @@ public class ConfigActivity extends Activity {
         private void setupPrefs() {
             int buttonCount = WearableButtons.getButtonCount(getContext());
 
-            if (buttonCount >= 1)
-                setupPref("home", "default", 0);
+            if (buttonCount >= 1) {
+                setupPref("home", "default", -1);
+                setupPref("home", "button0long", 0);
+            }
 
             if (buttonCount >= 2) {
                 setupPref("home", "button1", 1);
                 setupPref("home", "button1long", 1);
 
-                setupPref("extra", "default", 0);
+                setupPref("extra", "default", -1);
+                setupPref("extra", "button0long", 0);
                 setupPref("extra", "button1", 1);
                 setupPref("extra", "button1long", 1);
             }
         }
 
-        private void setupPref(String shortcutTrigger, String shortcutAdditional, int buttonIndex) {
+        private void setupPref(String shortcutTrigger, String shortcutAdditional, int buttonIcon) {
 
             final String pref = shortcutTrigger + "_" + shortcutAdditional;
 
@@ -112,7 +115,7 @@ public class ConfigActivity extends Activity {
                 summary = getAppLabel(pkg, cls);
             }
 
-            preference.setIcon(getIconForButton(buttonIndex));
+            preference.setIcon(getIconForButton(buttonIcon));
 
             updateSummary(pref, summary);
 
@@ -133,7 +136,7 @@ public class ConfigActivity extends Activity {
             Drawable icon = null;
             Drawable background = ContextCompat.getDrawable(getContext(), R.drawable.ic_background);
 
-            if (button >= 1) {
+            if (button >= 0) {
                 try {
                     icon = WearableButtons.getButtonIcon(getContext(), KeyEvent.KEYCODE_STEM_PRIMARY + button);
                 } catch (Exception e) {

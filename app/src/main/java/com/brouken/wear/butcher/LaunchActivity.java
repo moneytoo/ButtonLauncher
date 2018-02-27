@@ -33,20 +33,27 @@ public class LaunchActivity extends WearableActivity {
     private boolean launchedViaCustom = false;
 
     private String actionHomeDefault;
+    private String actionHomeButton0Long;
     private String actionHomeButton1;
     private String actionHomeButton1Long;
 
     private String actionExtraDefault;
+    private String actionExtraButton0Long;
     private String actionExtraButton1;
     private String actionExtraButton1Long;
 
     boolean longPressed = false;
+
+    //private static boolean lng = false;
+    private static long latestStart;
+    private static boolean latestStartViaAssist = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch2);
 
+        log("onCreate()");
         loadConfig();
 
         mImageView = findViewById(R.id.imageView);
@@ -81,6 +88,22 @@ public class LaunchActivity extends WearableActivity {
             if (!launchedViaAssist)
                 vibrate();
 
+            long currentTime = System.currentTimeMillis();
+            long timeDiff = Math.abs(currentTime - latestStart);
+            latestStart = currentTime;
+
+            if (timeDiff < 3000) {
+                if (latestStartViaAssist && actionHomeButton0Long != null) {
+                    latestStart = 0;
+                    launchApp(actionHomeButton0Long, false);
+                } else if (!latestStartViaAssist && actionExtraButton0Long != null) {
+                    latestStart = 0;
+                    launchApp(actionExtraButton0Long, false);
+                }
+            }
+
+            latestStartViaAssist = launchedViaAssist;
+
             try {
                 loadIcon();
 
@@ -109,7 +132,7 @@ public class LaunchActivity extends WearableActivity {
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                launchApp(app[0], app[1]);
+                launchApp(app[0], app[1], true);
                 mProgressbarAsync.cancel(true);
             }
         });
@@ -139,17 +162,24 @@ public class LaunchActivity extends WearableActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        log("onStart()");
+    }
+
+    @Override
     protected void onPostResume() {
         super.onPostResume();
+        log("onPostResume()");
 
         if (launchedViaAssist && actionHomeDefault != null) {
             if (actionHomeButton1 == null && actionHomeButton1Long == null) {
-                launchApp(actionHomeDefault);
+                launchApp(actionHomeDefault, false);
             } else
                 mProgressbarAsync.execute();
         } else if (launchedViaCustom && actionExtraDefault != null) {
             if (actionExtraButton1 == null && actionExtraButton1Long == null) {
-                launchApp(actionExtraDefault);
+                launchApp(actionExtraDefault, true);
             } else
                 mProgressbarAsync.execute();
         }
@@ -160,6 +190,13 @@ public class LaunchActivity extends WearableActivity {
         super.onStop();
 
         mProgressbarAsync.cancel(true);
+        log("onStop()");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        log("onDestroy()");
     }
 
     private class ProgressBarAsync extends AsyncTask<Void, Integer, Void>{
@@ -185,9 +222,9 @@ public class LaunchActivity extends WearableActivity {
                     mProgressStatus = mProgressBar.getMax() - diff;
 
                     publishProgress(mProgressStatus);
-                    Thread.sleep(50);
+                    Thread.sleep(25);
                 } catch(Exception e){
-                    e.printStackTrace();
+                    //e.printStackTrace();
 
                     // test
                     mProgressStatus = 0;
@@ -200,7 +237,7 @@ public class LaunchActivity extends WearableActivity {
         @Override
         protected void onCancelled() {
             super.onCancelled();
-            log("onCancelled");
+            log("ProgressBarAsync.onCancelled()");
             mRunning = false;
         }
 
@@ -220,9 +257,9 @@ public class LaunchActivity extends WearableActivity {
 
             if (mProgressStatus <= 0) {
                 if (launchedViaAssist)
-                    launchApp(actionHomeDefault);
+                    launchApp(actionHomeDefault, true);
                 else
-                    launchApp(actionExtraDefault);
+                    launchApp(actionExtraDefault, true);
             }
         }
     }
@@ -249,9 +286,9 @@ public class LaunchActivity extends WearableActivity {
         if (keyCode == KeyEvent.KEYCODE_STEM_1) {
             longPressed = true;
             if (launchedViaAssist)
-                launchApp(actionHomeButton1Long);
+                launchApp(actionHomeButton1Long, true);
             else
-                launchApp(actionExtraButton1Long);
+                launchApp(actionExtraButton1Long, true);
             return true;
         }
 
@@ -266,9 +303,9 @@ public class LaunchActivity extends WearableActivity {
         if (keyCode == KeyEvent.KEYCODE_STEM_1) {
             if (!longPressed) {
                 if (launchedViaAssist)
-                    launchApp(actionHomeButton1);
+                    launchApp(actionHomeButton1, true);
                 else
-                    launchApp(actionExtraButton1);
+                    launchApp(actionExtraButton1, true);
             }
             return true;
         }
@@ -282,16 +319,16 @@ public class LaunchActivity extends WearableActivity {
         vibrator.vibrate(pattern, -1);
     }
 
-    private void launchApp(String app) {
+    private void launchApp(String app, boolean vibrate) {
         if (app == null)
             return;
 
         String pkg = app.split("/")[0];
         String cls = app.split("/")[1];
-        launchApp(pkg, cls);
+        launchApp(pkg, cls, vibrate);
     }
 
-    private void launchApp(String pkg, String cls) {
+    private void launchApp(String pkg, String cls, boolean vibrate) {
         if (isFinishing())
             return;
 
@@ -302,7 +339,8 @@ public class LaunchActivity extends WearableActivity {
         intent.setComponent(componentName);
         startActivity(intent);
 
-        vibrate();
+        if (vibrate)
+            vibrate();
         finish();
     }
 
@@ -310,10 +348,12 @@ public class LaunchActivity extends WearableActivity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         actionHomeDefault = sharedPreferences.getString("home_default", null);
+        actionHomeButton0Long = sharedPreferences.getString("home_button0long", null);
         actionHomeButton1 = sharedPreferences.getString("home_button1", null);
         actionHomeButton1Long = sharedPreferences.getString("home_button1long", null);
 
         actionExtraDefault = sharedPreferences.getString("extra_default", null);
+        actionExtraButton0Long = sharedPreferences.getString("extra_button0long", null);
         actionExtraButton1 = sharedPreferences.getString("extra_button1", null);
         actionExtraButton1Long = sharedPreferences.getString("extra_button1long", null);
     }
