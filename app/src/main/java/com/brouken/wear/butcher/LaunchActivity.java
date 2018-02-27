@@ -1,5 +1,7 @@
 package com.brouken.wear.butcher;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +15,8 @@ import android.preference.PreferenceManager;
 import android.support.wearable.activity.WearableActivity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -25,9 +29,7 @@ public class LaunchActivity extends WearableActivity {
     private ImageView mImageView3;
     private ProgressBar mProgressBar;
 
-    private long countdownStart;
-    private int mProgressStatus = 3000;
-    private ProgressBarAsync mProgressbarAsync;
+    ObjectAnimator animator;
 
     private boolean launchedViaAssist = false;
     private boolean launchedViaCustom = false;
@@ -44,10 +46,6 @@ public class LaunchActivity extends WearableActivity {
 
     boolean longPressed = false;
 
-    //private static boolean lng = false;
-    private static long latestStart;
-    private static boolean latestStartViaAssist = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +59,8 @@ public class LaunchActivity extends WearableActivity {
         //mImageView3 = findViewById(R.id.imageView3);
         mProgressBar = findViewById(R.id.progressBar);
 
+        animator = ObjectAnimator.ofInt(mProgressBar, "progress", 3000);
+
         // Enables Always-on
         //setAmbientEnabled();
 
@@ -69,9 +69,27 @@ public class LaunchActivity extends WearableActivity {
         // home long press/assist: android-app://android
         // configurable button: android-app://com.google.android.apps.wearable.settings, because intent action is null
 
+        handleStart(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        log("onNewIntent()");
+
+        String action = intent.getAction();
+        if (action.equals(Intent.ACTION_ASSIST)) {
+            if (launchedViaAssist && actionHomeButton0Long != null)
+                launchApp(actionHomeButton0Long, false);
+            else if (launchedViaCustom && actionExtraButton0Long != null)
+                launchApp(actionExtraButton0Long, false);
+        }
+    }
+
+    private void handleStart(Intent intent) {
         boolean launchedViaLauncher = false;
 
-        String action = getIntent().getAction();
+        String action = intent.getAction();
         if (action != null) {
             if (action.equals(Intent.ACTION_ASSIST))
                 launchedViaAssist = true;
@@ -88,6 +106,7 @@ public class LaunchActivity extends WearableActivity {
             if (!launchedViaAssist)
                 vibrate();
 
+            /*
             long currentTime = System.currentTimeMillis();
             long timeDiff = Math.abs(currentTime - latestStart);
             latestStart = currentTime;
@@ -103,6 +122,7 @@ public class LaunchActivity extends WearableActivity {
             }
 
             latestStartViaAssist = launchedViaAssist;
+            */
 
             try {
                 loadIcon();
@@ -112,18 +132,20 @@ public class LaunchActivity extends WearableActivity {
                 e.printStackTrace();
             }
         }
-
-        mProgressbarAsync = new ProgressBarAsync();
-        //mProgressbarAsync.execute();
     }
 
     private void loadIcon() throws PackageManager.NameNotFoundException {
         final String[] app;
 
-        if (launchedViaAssist)
+        if (launchedViaAssist) {
+            if (actionHomeDefault == null)
+                return;
             app = actionHomeDefault.split("/");
-        else
+        } else {
+            if (actionExtraDefault == null)
+                return;
             app = actionExtraDefault.split("/");
+        }
 
         ComponentName componentName = new ComponentName(app[0], app[1]);
         Drawable icon = getPackageManager().getActivityIcon(componentName);
@@ -133,7 +155,6 @@ public class LaunchActivity extends WearableActivity {
             @Override
             public void onClick(View view) {
                 launchApp(app[0], app[1], true);
-                mProgressbarAsync.cancel(true);
             }
         });
 
@@ -165,32 +186,35 @@ public class LaunchActivity extends WearableActivity {
     protected void onStart() {
         super.onStart();
         log("onStart()");
+
+        if (launchedViaAssist && actionHomeDefault != null) {
+            if (actionHomeButton1 == null && actionHomeButton1Long == null) {
+                launchApp(actionHomeDefault, false);
+            } else {
+                startCountdown();
+            }
+        } else if (launchedViaCustom && actionExtraDefault != null) {
+            if (actionExtraButton1 == null && actionExtraButton1Long == null) {
+                launchApp(actionExtraDefault, true);
+            } else {
+                startCountdown();
+            }
+        }
     }
 
     @Override
     protected void onPostResume() {
         super.onPostResume();
         log("onPostResume()");
-
-        if (launchedViaAssist && actionHomeDefault != null) {
-            if (actionHomeButton1 == null && actionHomeButton1Long == null) {
-                launchApp(actionHomeDefault, false);
-            } else
-                mProgressbarAsync.execute();
-        } else if (launchedViaCustom && actionExtraDefault != null) {
-            if (actionExtraButton1 == null && actionExtraButton1Long == null) {
-                launchApp(actionExtraDefault, true);
-            } else
-                mProgressbarAsync.execute();
-        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-
-        mProgressbarAsync.cancel(true);
         log("onStop()");
+
+        if (!isFinishing())
+            finish();
     }
 
     @Override
@@ -199,69 +223,38 @@ public class LaunchActivity extends WearableActivity {
         log("onDestroy()");
     }
 
-    private class ProgressBarAsync extends AsyncTask<Void, Integer, Void>{
+    private void startCountdown() {
+        animator.setDuration(3000); // 0.5 second
+        animator.setInterpolator(new LinearInterpolator());
 
-        private boolean mRunning = false;
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            countdownStart = System.currentTimeMillis();
-            mRunning = true;
-        }
-
-        @Override
-        protected Void doInBackground(Void...params) {
-            while(mProgressStatus>0){
-                try {
-                    if(!mRunning)
-                        break;
-
-                    int diff = (int) (System.currentTimeMillis() - countdownStart);
-
-                    mProgressStatus = mProgressBar.getMax() - diff;
-
-                    publishProgress(mProgressStatus);
-                    Thread.sleep(25);
-                } catch(Exception e){
-                    //e.printStackTrace();
-
-                    // test
-                    mProgressStatus = 0;
-                    mRunning = false;
-                }
             }
-            return null;
-        }
 
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            log("ProgressBarAsync.onCancelled()");
-            mRunning = false;
-        }
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                log("onAnimationEnd()");
 
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-            mProgressBar.setProgress(mProgressStatus);
-            /*if(!mTglStart.isChecked()){
-                this.cancel(true);
-            }*/
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            //mTglStart.setChecked(false);
-
-            if (mProgressStatus <= 0) {
                 if (launchedViaAssist)
                     launchApp(actionHomeDefault, true);
                 else
                     launchApp(actionExtraDefault, true);
             }
-        }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+
+            }
+        });
+
+        animator.start();
     }
 
     @Override
@@ -329,6 +322,9 @@ public class LaunchActivity extends WearableActivity {
     }
 
     private void launchApp(String pkg, String cls, boolean vibrate) {
+        if (animator != null)
+            animator.cancel();
+
         if (isFinishing())
             return;
 
