@@ -8,14 +8,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.wearable.activity.WearableActivity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -106,62 +104,35 @@ public class LaunchActivity extends WearableActivity {
             if (!launchedViaAssist)
                 vibrate();
 
-            try {
-                loadIcon();
-
-                //mImageView2.setImageDrawable(icon);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            loadIcon();
         }
     }
 
-    private void loadIcon() throws PackageManager.NameNotFoundException {
-        final String[] app;
+    private void loadIcon() {
+        try {
+            final String[] app;
 
-        if (launchedViaAssist) {
-            if (actionHomeDefault == null)
-                return;
-            app = actionHomeDefault.split("/");
-        } else {
-            if (actionExtraDefault == null)
-                return;
-            app = actionExtraDefault.split("/");
-        }
-
-        ComponentName componentName = new ComponentName(app[0], app[1]);
-        Drawable icon = getPackageManager().getActivityIcon(componentName);
-        mImageView.setImageDrawable(icon);
-
-        mImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                launchApp(app[0], app[1], true);
+            if (launchedViaAssist) {
+                if (actionHomeDefault == null)
+                    return;
+                app = actionHomeDefault.split("/");
+            } else {
+                if (actionExtraDefault == null)
+                    return;
+                app = actionExtraDefault.split("/");
             }
-        });
 
-        ////
-        /*
-        if (launchedViaAssist)
-            app = actionHomeButton1.split("/");
-        else
-            app = actionExtraButton1.split("/");
+            ComponentName componentName = new ComponentName(app[0], app[1]);
+            Drawable icon = getPackageManager().getActivityIcon(componentName);
+            mImageView.setImageDrawable(icon);
 
-        componentName = new ComponentName(app[0], app[1]);
-        icon = getPackageManager().getActivityIcon(componentName);
-        mImageView2.setImageDrawable(icon);
-
-        ////
-
-        if (launchedViaAssist)
-            app = actionHomeButton1Long.split("/");
-        else
-            app = actionExtraButton1Long.split("/");
-
-        componentName = new ComponentName(app[0], app[1]);
-        icon = getPackageManager().getActivityIcon(componentName);
-        mImageView3.setImageDrawable(icon);
-        */
+            mImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    launchApp(app[0], app[1], true);
+                }
+            });
+        } catch (PackageManager.NameNotFoundException e) {}
     }
 
     @Override
@@ -205,9 +176,7 @@ public class LaunchActivity extends WearableActivity {
 
         animator.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animator) {
-
-            }
+            public void onAnimationStart(Animator animator) {}
 
             @Override
             public void onAnimationEnd(Animator animator) {
@@ -220,14 +189,10 @@ public class LaunchActivity extends WearableActivity {
             }
 
             @Override
-            public void onAnimationCancel(Animator animator) {
-
-            }
+            public void onAnimationCancel(Animator animator) {}
 
             @Override
-            public void onAnimationRepeat(Animator animator) {
-
-            }
+            public void onAnimationRepeat(Animator animator) {}
         });
 
         animator.start();
