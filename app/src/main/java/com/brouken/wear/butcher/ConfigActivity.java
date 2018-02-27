@@ -86,6 +86,22 @@ public class ConfigActivity extends Activity {
                 setupPref("extra", "button1", 1);
                 setupPref("extra", "button1long", 1);
             }
+
+            if (buttonCount >= 3) {
+                setupPref("home", "button2", 2);
+                setupPref("home", "button2long", 2);
+
+                setupPref("extra", "button2", 2);
+                setupPref("extra", "button2long", 2);
+            }
+
+            if (buttonCount >= 4) {
+                setupPref("home", "button3", 3);
+                setupPref("home", "button3long", 3);
+
+                setupPref("extra", "button3", 3);
+                setupPref("extra", "button3long", 3);
+            }
         }
 
         private void setupPref(String shortcutTrigger, String shortcutAdditional, int buttonIcon) {

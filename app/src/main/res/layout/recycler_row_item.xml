@@ -11,8 +11,8 @@
     android:paddingStart="@dimen/recycler_row_padding">
 
     <ImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:id="@+id/imageView"/>
 
     <TextView

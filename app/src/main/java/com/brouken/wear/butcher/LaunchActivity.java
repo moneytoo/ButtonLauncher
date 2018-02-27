@@ -6,12 +6,10 @@ import android.animation.ObjectAnimator;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.preference.PreferenceManager;
 import android.support.wearable.activity.WearableActivity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -33,17 +31,9 @@ public class LaunchActivity extends WearableActivity {
     private boolean launchedViaAssist = false;
     private boolean launchedViaCustom = false;
 
-    private String actionHomeDefault;
-    private String actionHomeButton0Long;
-    private String actionHomeButton1;
-    private String actionHomeButton1Long;
-
-    private String actionExtraDefault;
-    private String actionExtraButton0Long;
-    private String actionExtraButton1;
-    private String actionExtraButton1Long;
-
     boolean longPressed = false;
+
+    LaunchActions mLaunchActions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +41,7 @@ public class LaunchActivity extends WearableActivity {
         setContentView(R.layout.activity_launch2);
 
         log("onCreate()");
-        loadConfig();
+        //loadConfig();
 
         mImageView = findViewById(R.id.imageView);
         //mImageView2 = findViewById(R.id.imageView2);
@@ -69,6 +59,11 @@ public class LaunchActivity extends WearableActivity {
         // configurable button: android-app://com.google.android.apps.wearable.settings, because intent action is null
 
         handleStart(getIntent());
+
+        mLaunchActions = new LaunchActions(this, launchedViaAssist);
+
+        if (!isFinishing())
+            loadIcon();
     }
 
     @Override
@@ -78,10 +73,8 @@ public class LaunchActivity extends WearableActivity {
 
         String action = intent.getAction();
         if (action.equals(Intent.ACTION_ASSIST)) {
-            if (launchedViaAssist && actionHomeButton0Long != null)
-                launchApp(actionHomeButton0Long, false);
-            else if (launchedViaCustom && actionExtraButton0Long != null)
-                launchApp(actionExtraButton0Long, false);
+            final String app = mLaunchActions.getAppForButton(0, true);
+            launchApp(app, false);
         }
     }
 
@@ -104,33 +97,26 @@ public class LaunchActivity extends WearableActivity {
         } else {
             if (!launchedViaAssist)
                 vibrate();
-
-            loadIcon();
         }
     }
 
     private void loadIcon() {
         try {
-            final String[] app;
+            final String app = mLaunchActions.getAppForButton(-1, false);
 
-            if (launchedViaAssist) {
-                if (actionHomeDefault == null)
-                    return;
-                app = actionHomeDefault.split("/");
-            } else {
-                if (actionExtraDefault == null)
-                    return;
-                app = actionExtraDefault.split("/");
-            }
+            if (app == null)
+                return;
 
-            ComponentName componentName = new ComponentName(app[0], app[1]);
+            String[] appParts = app.split("/");
+
+            ComponentName componentName = new ComponentName(appParts[0], appParts[1]);
             Drawable icon = getPackageManager().getActivityIcon(componentName);
             mImageView.setImageDrawable(icon);
 
             mImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    launchApp(app[0], app[1], true);
+                    launchApp(app, true);
                 }
             });
         } catch (PackageManager.NameNotFoundException e) {}
@@ -141,19 +127,11 @@ public class LaunchActivity extends WearableActivity {
         super.onStart();
         log("onStart()");
 
-        if (launchedViaAssist && actionHomeDefault != null) {
-            if (actionHomeButton1 == null && actionHomeButton1Long == null) {
-                launchApp(actionHomeDefault, false);
-            } else {
-                startCountdown();
-            }
-        } else if (launchedViaCustom && actionExtraDefault != null) {
-            if (actionExtraButton1 == null && actionExtraButton1Long == null) {
-                launchApp(actionExtraDefault, true);
-            } else {
-                startCountdown();
-            }
-        }
+        if (mLaunchActions.hasOnlyDefaultAction()) {
+            String app = mLaunchActions.getAppForButton(-1, false);
+            launchApp(app, !launchedViaAssist);
+        } else
+            startCountdown();
     }
 
     @Override
@@ -182,10 +160,8 @@ public class LaunchActivity extends WearableActivity {
 
                 log("onAnimationEnd()");
 
-                if (launchedViaAssist)
-                    launchApp(actionHomeDefault, true);
-                else
-                    launchApp(actionExtraDefault, true);
+                String app = mLaunchActions.getAppForButton(-1, false);
+                launchApp(app, true);
             }
         });
 
@@ -197,8 +173,7 @@ public class LaunchActivity extends WearableActivity {
 
         log("onKeyDown");
 
-        if (keyCode == KeyEvent.KEYCODE_STEM_1) {
-            log("KEYCODE_STEM_1");
+        if (keyCode >= KeyEvent.KEYCODE_STEM_1 && keyCode <= KeyEvent.KEYCODE_STEM_3) {
             event.startTracking();
             return true;
         }
@@ -211,12 +186,12 @@ public class LaunchActivity extends WearableActivity {
 
         log("onKeyLongPress");
 
-        if (keyCode == KeyEvent.KEYCODE_STEM_1) {
+        if (keyCode >= KeyEvent.KEYCODE_STEM_1 && keyCode <= KeyEvent.KEYCODE_STEM_3) {
             longPressed = true;
-            if (launchedViaAssist)
-                launchApp(actionHomeButton1Long, true);
-            else
-                launchApp(actionExtraButton1Long, true);
+
+            String app = mLaunchActions.getAppForButton(keyCode - KeyEvent.KEYCODE_STEM_PRIMARY, true);
+            launchApp(app, true);
+
             return true;
         }
 
@@ -228,12 +203,10 @@ public class LaunchActivity extends WearableActivity {
 
         log("onKeyUp");
 
-        if (keyCode == KeyEvent.KEYCODE_STEM_1) {
+        if (keyCode >= KeyEvent.KEYCODE_STEM_1 && keyCode <= KeyEvent.KEYCODE_STEM_3) {
             if (!longPressed) {
-                if (launchedViaAssist)
-                    launchApp(actionHomeButton1, true);
-                else
-                    launchApp(actionExtraButton1, true);
+                String app = mLaunchActions.getAppForButton(keyCode - KeyEvent.KEYCODE_STEM_PRIMARY, false);
+                launchApp(app, true);
             }
             return true;
         }
@@ -273,19 +246,5 @@ public class LaunchActivity extends WearableActivity {
         if (vibrate)
             vibrate();
         finish();
-    }
-
-    private void loadConfig() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        actionHomeDefault = sharedPreferences.getString("home_default", null);
-        actionHomeButton0Long = sharedPreferences.getString("home_button0long", null);
-        actionHomeButton1 = sharedPreferences.getString("home_button1", null);
-        actionHomeButton1Long = sharedPreferences.getString("home_button1long", null);
-
-        actionExtraDefault = sharedPreferences.getString("extra_default", null);
-        actionExtraButton0Long = sharedPreferences.getString("extra_button0long", null);
-        actionExtraButton1 = sharedPreferences.getString("extra_button1", null);
-        actionExtraButton1Long = sharedPreferences.getString("extra_button1long", null);
     }
 }
