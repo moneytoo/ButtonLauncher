@@ -56,9 +56,11 @@ public class ConfigActivity extends Activity {
                 String app = data.getStringExtra("app");
                 String pkg = data.getStringExtra("pkg");
                 String cls = data.getStringExtra("cls");
+                String action = data.getStringExtra("action");
+                String category = data.getStringExtra("category");
 
                 savePreferences(pref, app);
-                String name = getAppLabel(pkg, cls);
+                String name = getAppLabel(pkg, cls, action, category);
 
                 updateSummary(pref, name);
             }
@@ -126,12 +128,8 @@ public class ConfigActivity extends Activity {
             String app = loadValue(pref);
             String summary = null;
 
-            if (app != null) {
-                String pkg = app.split("/")[0];
-                String cls = app.split("/")[1];
-
-                summary = getAppLabel(pkg, cls);
-            }
+            if (app != null)
+                summary = getAppLabel(app);
 
             preference.setIcon(getIconForButton(buttonIcon));
 
@@ -182,13 +180,29 @@ public class ConfigActivity extends Activity {
             editor.apply();
         }
 
-        private String getAppLabel(String pkg, String cls) {
+        private String getAppLabel(String app) {
+            String[] parts = app.split("/");
+            String pkg = parts[0];
+            String cls = parts[1];
+
+            String action = Intent.ACTION_MAIN;
+            String category = Intent.CATEGORY_LAUNCHER;
+
+            if (parts.length > 2)
+                action = parts[2];
+            if (parts.length > 3)
+                category = parts[3];
+
+            return getAppLabel(pkg, cls, action, category);
+        }
+
+        private String getAppLabel(String pkg, String cls, String action, String category) {
             if (pkg == null || cls == null)
                 return null;
 
-            Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+            Intent mainIntent = new Intent(action);
             ComponentName componentName = new ComponentName(pkg, cls);
-            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            mainIntent.addCategory(category);
             mainIntent.setComponent(componentName);
             List<ResolveInfo> pkgAppsList = getContext().getPackageManager().queryIntentActivities( mainIntent, 0);
             if (pkgAppsList.isEmpty())

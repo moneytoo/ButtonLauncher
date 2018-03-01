@@ -137,7 +137,8 @@ public class AppPickerActivity extends Activity {
                 category = Intent.CATEGORY_DEFAULT;
             }
 
-            //intent.putExtra("action", action); // not used
+            intent.putExtra("action", action);
+            intent.putExtra("category", category);
             intent.putExtra("app", pkg + "/" + cls + "/" + action + "/" + category);
         }
 
