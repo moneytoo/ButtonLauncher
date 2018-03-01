@@ -28,7 +28,7 @@ public class AppPickerActivity extends Activity {
     private CustomRecyclerAdapter mCustomRecyclerAdapter;
 
     private List<ResolveInfo> pkgAppsList;
-    Map<String, ResolveInfo> assistApps = new HashMap<String, ResolveInfo>();
+    ResolveInfo assistApp;
 
     Context mContext;
 
@@ -48,26 +48,15 @@ public class AppPickerActivity extends Activity {
 
         Intent assistIntent = new Intent(Intent.ACTION_ASSIST);
         assistIntent.addCategory(Intent.CATEGORY_DEFAULT);
-
         List<ResolveInfo> pkgAssistAppsList = mContext.getPackageManager().queryIntentActivities( assistIntent, 0);
 
         for (ResolveInfo resolveInfo : pkgAssistAppsList) {
-            String pkg = resolveInfo.activityInfo.packageName;
-
-            if (pkg.equals(getPackageName()))
+            if (resolveInfo.activityInfo.packageName.equals(getPackageName()))
                 continue;
 
-            if (!assistApps.containsKey(pkg))
-                assistApps.put(pkg, resolveInfo);
-            else {
-                int priority = resolveInfo.priority;
-                if (priority > assistApps.get(pkg).priority)
-                    assistApps.replace(pkg, resolveInfo);
-            }
-        }
-
-        for (ResolveInfo resolveInfo : assistApps.values()) {
+            assistApp = resolveInfo;
             pkgAppsList.add(resolveInfo);
+            break;
         }
 
         Iterator<ResolveInfo> resolveInfoIterator = pkgAppsList.iterator();
@@ -115,11 +104,8 @@ public class AppPickerActivity extends Activity {
     }
 
     private boolean isAssistApp(String pkg, String cls) {
-        if (assistApps.containsKey(pkg)) {
-            ResolveInfo resolveInfo = assistApps.get(pkg);
-            if (resolveInfo.activityInfo.name.equals(cls))
-                return true;
-        }
+        if (assistApp != null && assistApp.activityInfo.packageName.equals(pkg) && assistApp.activityInfo.name.equals(cls))
+            return true;
         return false;
     }
 
