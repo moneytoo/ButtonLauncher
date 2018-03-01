@@ -191,6 +191,8 @@ public class ConfigActivity extends Activity {
             mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
             mainIntent.setComponent(componentName);
             List<ResolveInfo> pkgAppsList = getContext().getPackageManager().queryIntentActivities( mainIntent, 0);
+            if (pkgAppsList.isEmpty())
+                return null;
             return pkgAppsList.get(0).activityInfo.loadLabel(getContext().getPackageManager()).toString();
         }
 

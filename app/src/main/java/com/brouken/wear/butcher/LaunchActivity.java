@@ -266,10 +266,14 @@ public class LaunchActivity extends WearableActivity {
         intent.addCategory(category);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setComponent(componentName);
-        startActivity(intent);
 
-        if (vibrate)
-            vibrate();
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+
+            if (vibrate)
+                vibrate();
+        }
+
         finish();
     }
 
