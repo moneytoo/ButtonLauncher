@@ -6,8 +6,8 @@ import android.preference.PreferenceManager;
 
 public class LaunchActions {
 
-    private Context mContext;
-    private boolean mComboStartPrimaryButton;
+    private final Context mContext;
+    private final boolean mComboStartPrimaryButton;
 
     private String actionDefault;
     private String actionButton0Long;
@@ -43,17 +43,11 @@ public class LaunchActions {
     }
 
     public boolean hasOnlyDefaultAction() {
-        if (actionButton0Long == null && actionButton1 == null && actionButton1Long == null)
-            return true;
-        else
-            return false;
+        return (actionButton0Long == null && actionButton1 == null && actionButton1Long == null);
     }
 
     public boolean hasDefaultAction() {
-        if (actionDefault == null)
-            return false;
-        else
-            return true;
+        return !(actionDefault == null);
     }
 
     private void loadConfig() {

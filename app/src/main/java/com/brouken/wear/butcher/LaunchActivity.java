@@ -28,7 +28,7 @@ public class LaunchActivity extends WearableActivity {
     private ImageView mImageView3;
     private ProgressBar mProgressBar;
 
-    ObjectAnimator animator;
+    private ObjectAnimator animator;
 
     private boolean launchedViaAssist = false;
     private boolean launchedViaCustom = false;
@@ -36,9 +36,9 @@ public class LaunchActivity extends WearableActivity {
     private boolean vibrate = true;
     private int timeout = 3000;
 
-    boolean longPressed = false;
+    private boolean longPressed = false;
 
-    LaunchActions mLaunchActions;
+    private LaunchActions mLaunchActions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -232,7 +232,8 @@ public class LaunchActivity extends WearableActivity {
 
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         long[] pattern = {0, 20};
-        vibrator.vibrate(pattern, -1);
+        if (vibrator != null)
+            vibrator.vibrate(pattern, -1);
     }
 
     private void launchApp(String app, boolean vibrate) {

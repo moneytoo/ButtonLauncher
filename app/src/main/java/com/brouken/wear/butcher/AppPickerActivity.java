@@ -15,10 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import static com.brouken.wear.butcher.Utils.log;
 
@@ -28,11 +26,11 @@ public class AppPickerActivity extends Activity {
     private CustomRecyclerAdapter mCustomRecyclerAdapter;
 
     private List<ResolveInfo> pkgAppsList;
-    ResolveInfo assistApp;
+    private ResolveInfo assistApp;
 
-    Context mContext;
+    private Context mContext;
 
-    String pref;
+    private String pref;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -104,9 +102,7 @@ public class AppPickerActivity extends Activity {
     }
 
     private boolean isAssistApp(String pkg, String cls) {
-        if (assistApp != null && assistApp.activityInfo.packageName.equals(pkg) && assistApp.activityInfo.name.equals(cls))
-            return true;
-        return false;
+        return (assistApp != null && assistApp.activityInfo.packageName.equals(pkg) && assistApp.activityInfo.name.equals(cls));
     }
 
 
@@ -136,8 +132,8 @@ public class AppPickerActivity extends Activity {
 
     private static final class CustomRecyclerAdapter extends WearableRecyclerView.Adapter<CustomRecyclerAdapter.ViewHolder> {
 
-        private ResolveInfo[] mDataSet;
-        private AppPickerActivity mAppPickerActivity;
+        final private ResolveInfo[] mDataSet;
+        final private AppPickerActivity mAppPickerActivity;
 
         public static class ViewHolder extends android.support.wearable.view.WearableRecyclerView.ViewHolder {
 
@@ -146,8 +142,8 @@ public class AppPickerActivity extends Activity {
 
             public ViewHolder(View view) {
                 super(view);
-                mTextView = (TextView) view.findViewById(R.id.textView);
-                mImageView = (ImageView) view.findViewById(R.id.imageView);
+                mTextView = view.findViewById(R.id.textView);
+                mImageView = view.findViewById(R.id.imageView);
             }
 
             @Override

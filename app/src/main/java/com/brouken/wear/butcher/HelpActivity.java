@@ -46,7 +46,7 @@ public class HelpActivity extends WearableActivity {
         if (buttonCount >= 1) {
             labelPrimary = "(" + WearableButtons.getButtonLabel(this, KeyEvent.KEYCODE_STEM_PRIMARY).toString().toLowerCase() + ") ";
 
-            ArrayList<String> labels = new ArrayList<String>();
+            ArrayList<String> labels = new ArrayList<>();
             for (int i = 1; i < buttonCount; i++) {
                 String label = WearableButtons.getButtonLabel(this, KeyEvent.KEYCODE_STEM_PRIMARY + i).toString().toLowerCase();
                 labels.add(label);
