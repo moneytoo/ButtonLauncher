@@ -15,8 +15,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static com.brouken.wear.butcher.Utils.log;
 
@@ -26,6 +28,7 @@ public class AppPickerActivity extends Activity {
     private CustomRecyclerAdapter mCustomRecyclerAdapter;
 
     private List<ResolveInfo> pkgAppsList;
+    Map<String, ResolveInfo> assistApps = new HashMap<String, ResolveInfo>();
 
     Context mContext;
 
@@ -42,6 +45,30 @@ public class AppPickerActivity extends Activity {
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         pkgAppsList = mContext.getPackageManager().queryIntentActivities( mainIntent, 0);
+
+        Intent assistIntent = new Intent(Intent.ACTION_ASSIST);
+        assistIntent.addCategory(Intent.CATEGORY_DEFAULT);
+
+        List<ResolveInfo> pkgAssistAppsList = mContext.getPackageManager().queryIntentActivities( assistIntent, 0);
+
+        for (ResolveInfo resolveInfo : pkgAssistAppsList) {
+            String pkg = resolveInfo.activityInfo.packageName;
+
+            if (pkg.equals(getPackageName()))
+                continue;
+
+            if (!assistApps.containsKey(pkg))
+                assistApps.put(pkg, resolveInfo);
+            else {
+                int priority = resolveInfo.priority;
+                if (priority > assistApps.get(pkg).priority)
+                    assistApps.replace(pkg, resolveInfo);
+            }
+        }
+
+        for (ResolveInfo resolveInfo : assistApps.values()) {
+            pkgAppsList.add(resolveInfo);
+        }
 
         Iterator<ResolveInfo> resolveInfoIterator = pkgAppsList.iterator();
         while (resolveInfoIterator.hasNext())  {
@@ -87,13 +114,32 @@ public class AppPickerActivity extends Activity {
         */
     }
 
+    private boolean isAssistApp(String pkg, String cls) {
+        if (assistApps.containsKey(pkg)) {
+            ResolveInfo resolveInfo = assistApps.get(pkg);
+            if (resolveInfo.activityInfo.name.equals(cls))
+                return true;
+        }
+        return false;
+    }
+
 
     public void itemSelected(String pkg, String cls) {
         Intent intent=new Intent();
         intent.putExtra("pref", pref);
 
-        if (pkg != null && cls != null)
-            intent.putExtra("app", pkg + "/" + cls);
+        if (pkg != null && cls != null) {
+            String action = Intent.ACTION_MAIN;
+            String category = Intent.CATEGORY_LAUNCHER;
+
+            if (isAssistApp(pkg, cls)) {
+                action = Intent.ACTION_ASSIST;
+                category = Intent.CATEGORY_DEFAULT;
+            }
+
+            //intent.putExtra("action", action); // not used
+            intent.putExtra("app", pkg + "/" + cls + "/" + action + "/" + category);
+        }
 
         intent.putExtra("pkg", pkg);
         intent.putExtra("cls", cls);

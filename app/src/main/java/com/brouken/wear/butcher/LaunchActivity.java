@@ -239,12 +239,22 @@ public class LaunchActivity extends WearableActivity {
         if (app == null)
             return;
 
-        String pkg = app.split("/")[0];
-        String cls = app.split("/")[1];
-        launchApp(pkg, cls, vibrate);
+        String[] parts = app.split("/");
+
+        String pkg = parts[0];
+        String cls = parts[1];
+        String action = Intent.ACTION_MAIN;
+        String category = Intent.CATEGORY_LAUNCHER;
+
+        if (parts.length > 2)
+            action = parts[2];
+        if (parts.length > 3)
+            category = parts[3];
+
+        launchApp(pkg, cls, action, category, vibrate);
     }
 
-    private void launchApp(String pkg, String cls, boolean vibrate) {
+    private void launchApp(String pkg, String cls, String action, String category, boolean vibrate) {
         if (animator != null)
             animator.pause();
 
@@ -252,8 +262,8 @@ public class LaunchActivity extends WearableActivity {
             return;
 
         ComponentName componentName = new ComponentName(pkg, cls);
-        Intent intent=new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        Intent intent=new Intent(action);
+        intent.addCategory(category);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setComponent(componentName);
         startActivity(intent);
