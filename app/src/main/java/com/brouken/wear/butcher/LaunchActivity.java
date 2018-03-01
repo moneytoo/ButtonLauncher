@@ -80,9 +80,11 @@ public class LaunchActivity extends WearableActivity {
         log("onNewIntent()");
 
         String action = intent.getAction();
-        if (action.equals(Intent.ACTION_ASSIST)) {
-            final String app = mLaunchActions.getAppForButton(0, true);
-            launchApp(app, false);
+        if (action != null) {
+            if (action.equals(Intent.ACTION_ASSIST)) {
+                final String app = mLaunchActions.getAppForButton(0, true);
+                launchApp(app, false);
+            }
         }
     }
 
