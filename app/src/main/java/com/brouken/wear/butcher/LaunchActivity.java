@@ -104,9 +104,6 @@ public class LaunchActivity extends WearableActivity {
             Intent config = new Intent(this, ConfigActivity.class);
             startActivity(config);
             finish();
-        } else {
-            if (!launchedViaAssist)
-                vibrate();
         }
     }
 
@@ -141,6 +138,8 @@ public class LaunchActivity extends WearableActivity {
             String app = mLaunchActions.getAppForButton(-1, false);
             launchApp(app, !launchedViaAssist);
         } else {
+            if (!launchedViaAssist)
+                vibrate();
             if (mLaunchActions.hasDefaultAction())
                 startCountdown();
         }
