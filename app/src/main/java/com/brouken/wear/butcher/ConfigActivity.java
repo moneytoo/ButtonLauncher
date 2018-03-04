@@ -13,6 +13,7 @@ import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.wearable.input.WearableButtons;
@@ -76,10 +77,13 @@ public class ConfigActivity extends Activity {
         private void setupPrefs() {
             int buttonCount = WearableButtons.getButtonCount(getContext());
 
-            if (buttonCount >= 1) {
+            // FIXME: bug? misfit vapor
+            //if (buttonCount >= 1) {
                 setupPref("home", "default", -1);
                 setupPref("home", "button0long", 0);
-            }
+            //}
+            if (buttonCount <= 1)
+                removeCategory("extra");
 
             if (buttonCount >= 2) {
                 setupPref("home", "button1", 1);
@@ -152,12 +156,10 @@ public class ConfigActivity extends Activity {
             Drawable icon = null;
             Drawable background = ContextCompat.getDrawable(getContext(), R.drawable.ic_background);
 
-            if (button >= 0) {
-                try {
-                    icon = WearableButtons.getButtonIcon(getContext(), KeyEvent.KEYCODE_STEM_PRIMARY + button);
-                } catch (Exception e) {
-                }
-            } else
+            if (button >= 0)
+                icon = WearableButtons.getButtonIcon(getContext(), KeyEvent.KEYCODE_STEM_PRIMARY + button);
+
+            if (icon == null)
                 icon = ContextCompat.getDrawable(getContext(), R.drawable.ic_circle);
 
             LayerDrawable finalDrawable = new LayerDrawable(new Drawable[] {background, icon});
@@ -165,6 +167,11 @@ public class ConfigActivity extends Activity {
             finalDrawable.setLayerInset(1, inset, inset, inset, inset);
 
             return finalDrawable;
+        }
+
+        private void removeCategory(String key) {
+            PreferenceScreen preferenceScreen = (PreferenceScreen) findPreference("screen");
+            preferenceScreen.removePreference(findPreference(key));
         }
 
         private String loadValue(String key) {

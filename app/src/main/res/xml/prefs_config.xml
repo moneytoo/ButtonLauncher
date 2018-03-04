@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:title="Settings">
+    android:title="Settings"
+    android:key="screen">
 
     <PreferenceCategory
         android:title="Long press primary button"
