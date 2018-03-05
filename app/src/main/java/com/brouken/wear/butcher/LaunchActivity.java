@@ -7,15 +7,18 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.wearable.activity.WearableActivity;
+import android.support.wearable.input.WearableButtons;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -23,9 +26,7 @@ import static com.brouken.wear.butcher.Utils.log;
 
 public class LaunchActivity extends WearableActivity {
 
-    private ImageView mImageView;
-    private ImageView mImageView2;
-    private ImageView mImageView3;
+    //private ImageView mImageView;
     private ProgressBar mProgressBar;
 
     private ObjectAnimator animator;
@@ -43,14 +44,11 @@ public class LaunchActivity extends WearableActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_launch2);
+        setContentView(R.layout.activity_launch);
 
         log("onCreate()");
         loadConfig();
 
-        mImageView = findViewById(R.id.imageView);
-        //mImageView2 = findViewById(R.id.imageView2);
-        //mImageView3 = findViewById(R.id.imageView3);
         mProgressBar = findViewById(R.id.progressBar);
 
         animator = ObjectAnimator.ofInt(mProgressBar, "progress", timeout);
@@ -69,8 +67,111 @@ public class LaunchActivity extends WearableActivity {
         mLaunchActions = new LaunchActions(this, launchedViaAssist);
 
         if (!isFinishing()) {
-            loadIcon();
+            setupCircles();
             loadConfig();
+        }
+    }
+
+    private void setupCircles() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int width = displayMetrics.widthPixels;
+
+        RingDrawable ring = new RingDrawable(10, width/3/2, 2.3f, 0);
+        ring.setColor(Color.parseColor("#002333"));
+
+        mProgressBar.setRotation(270);
+        mProgressBar.setProgressDrawable(ring);
+
+        circle(R.drawable.circle, false, width);
+        circle(R.drawable.circle_center, true, width);
+
+        loadIcons(-1, false, width);
+        loadIcons(0, true, width);
+
+        int buttonCount = WearableButtons.getButtonCount(this);
+
+        if (buttonCount >= 2) {
+            loadIcons(1, false, width);
+            loadIcons(1, true, width);
+        }
+        if (buttonCount >= 3) {
+            loadIcons(2, false, width);
+            loadIcons(2, true, width);
+        }
+        if (buttonCount >= 4) {
+            loadIcons(3, false, width);
+            loadIcons(3, true, width);
+        }
+    }
+
+    private void circle(int res, boolean inner, int side) {
+        FrameLayout frameLayout = findViewById(R.id.frameLayout);
+        ImageView img = new ImageView(this);
+        img.setBackgroundResource(res);
+
+        int circleWidth = side / 3 * (inner ? 1 : 2);
+
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(circleWidth, circleWidth);
+        layoutParams.leftMargin = side / 2 - layoutParams.width / 2;
+        layoutParams.topMargin  = side / 2 - layoutParams.height / 2;
+        frameLayout.addView(img, layoutParams);
+    }
+
+    private void loadIcons(int buttonIndex, boolean longPressed, int side) {
+        float buttonX = 0;
+        float buttonY = 0;
+
+        if (buttonIndex >= 0) {
+            WearableButtons.ButtonInfo buttonInfo = WearableButtons.getButtonInfo(this, KeyEvent.KEYCODE_STEM_PRIMARY + buttonIndex);
+
+            if (buttonInfo == null) {
+                buttonX = side;
+                buttonY = side / 2;
+            } else {
+                buttonX = buttonInfo.getX();
+                buttonY = buttonInfo.getY();
+            }
+        }
+
+        FrameLayout frameLayout = findViewById(R.id.frameLayout);
+        ImageView imageView = new ImageView(this);
+        imageView.setImageDrawable(getDrawableForButton(buttonIndex, longPressed));
+
+        int center = side / 2;
+
+        float distance = (longPressed ? 0.825f : 0.5f);
+
+        float x = center + (buttonX - center) * distance;
+        float y = center + (buttonY - center) * distance;
+
+        if (buttonIndex == -1) {
+            x = center;
+            y = center;
+        }
+
+        int size = (longPressed ? side/10 : side/8);
+
+        if (buttonIndex == -1)
+            size = side / 4;
+
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(size, size);
+        layoutParams.leftMargin = (int) x - layoutParams.width / 2;
+        layoutParams.topMargin  = (int) y - layoutParams.height / 2;
+        frameLayout.addView(imageView, layoutParams);
+
+        if (buttonIndex == -1) {
+            final String app = mLaunchActions.getAppForButton(buttonIndex, longPressed);
+
+            if (app == null)
+                return;
+
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    launchApp(app, true);
+                }
+            });
         }
     }
 
@@ -107,26 +208,19 @@ public class LaunchActivity extends WearableActivity {
         }
     }
 
-    private void loadIcon() {
+    private Drawable getDrawableForButton(int button, boolean longPressed) {
         try {
-            final String app = mLaunchActions.getAppForButton(-1, false);
+            final String app = mLaunchActions.getAppForButton(button, longPressed);
 
             if (app == null)
-                return;
+                return null;
 
             String[] appParts = app.split("/");
 
             ComponentName componentName = new ComponentName(appParts[0], appParts[1]);
-            Drawable icon = getPackageManager().getActivityIcon(componentName);
-            mImageView.setImageDrawable(icon);
-
-            mImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    launchApp(app, true);
-                }
-            });
-        } catch (PackageManager.NameNotFoundException e) {}
+            return getPackageManager().getActivityIcon(componentName);
+        } catch (Exception e) {}
+        return null;
     }
 
     @Override

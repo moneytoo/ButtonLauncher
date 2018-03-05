@@ -6,8 +6,8 @@ android {
         applicationId "com.brouken.wear.butcher"
         minSdkVersion 25
         targetSdkVersion 26
-        versionCode 5
-        versionName "0.3"
+        versionCode 6
+        versionName "0.4"
     }
     buildTypes {
         release {
@@ -26,6 +26,4 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:26.1.0'
     implementation 'com.android.support:wear:26.1.0'
     compileOnly 'com.google.android.wearable:wearable:2.2.0'
-
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 }
