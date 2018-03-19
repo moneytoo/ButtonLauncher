@@ -132,8 +132,13 @@ public class ConfigActivity extends Activity {
             String app = loadValue(pref);
             String summary = null;
 
-            if (app != null)
+            if (app != null) {
                 summary = getAppLabel(app);
+
+                // App uninstalled/disabled -> clean up shortcut
+                if (summary == null)
+                    savePreferences(pref, null);
+            }
 
             preference.setIcon(getIconForButton(buttonIcon));
 

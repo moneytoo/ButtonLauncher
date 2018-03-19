@@ -3,6 +3,7 @@ package com.brouken.wear.butcher;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import static com.brouken.wear.butcher.Utils.log;
 
@@ -361,11 +363,13 @@ public class LaunchActivity extends WearableActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setComponent(componentName);
 
-        if (intent.resolveActivity(getPackageManager()) != null) {
+        try {
             startActivity(intent);
 
             if (vibrate)
                 vibrate();
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "App not found", Toast.LENGTH_SHORT).show();
         }
 
         finish();
