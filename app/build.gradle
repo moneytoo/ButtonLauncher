@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId "com.brouken.wear.butcher"
         minSdkVersion 25
-        targetSdkVersion 26
-        versionCode 8
+        targetSdkVersion 27
+        versionCode 9
         versionName "0.6"
     }
     buildTypes {
@@ -21,9 +21,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.google.android.support:wearable:2.2.0'
     implementation 'com.google.android.gms:play-services-wearable:11.8.0'
-    implementation 'com.android.support:percent:26.1.0'
-    implementation 'com.android.support:support-v4:26.1.0'
-    implementation 'com.android.support:recyclerview-v7:26.1.0'
-    implementation 'com.android.support:wear:26.1.0'
+    implementation 'com.android.support:percent:27.1.0'
+    implementation 'com.android.support:support-v4:27.1.0'
+    implementation 'com.android.support:recyclerview-v7:27.1.0'
+    implementation 'com.android.support:wear:27.1.0'
     compileOnly 'com.google.android.wearable:wearable:2.2.0'
 }
