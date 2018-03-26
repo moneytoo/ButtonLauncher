@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
@@ -234,7 +235,7 @@ public class LaunchActivity extends WearableActivity {
             String app = mLaunchActions.getAppForButton(-1, false);
             launchApp(app, !launchedViaAssist);
         } else {
-            if (!launchedViaAssist)
+            if (!launchedViaAssist || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 vibrate();
             if (mLaunchActions.hasDefaultAction())
                 startCountdown();
@@ -366,7 +367,7 @@ public class LaunchActivity extends WearableActivity {
         try {
             startActivity(intent);
 
-            if (vibrate)
+            if (vibrate || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 vibrate();
         } catch (ActivityNotFoundException e) {
             Toast.makeText(this, "App not found", Toast.LENGTH_SHORT).show();
