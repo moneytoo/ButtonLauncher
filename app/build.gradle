@@ -6,8 +6,8 @@ android {
         applicationId "com.brouken.wear.butcher"
         minSdkVersion 25
         targetSdkVersion 26
-        versionCode 7
-        versionName "0.5"
+        versionCode 8
+        versionName "0.6"
     }
     buildTypes {
         release {

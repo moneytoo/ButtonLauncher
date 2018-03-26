@@ -370,6 +370,8 @@ public class LaunchActivity extends WearableActivity {
                 vibrate();
         } catch (ActivityNotFoundException e) {
             Toast.makeText(this, "App not found", Toast.LENGTH_SHORT).show();
+        } catch (SecurityException e) {
+            Toast.makeText(this, "Launch not allowed", Toast.LENGTH_SHORT).show();
         }
 
         finish();
