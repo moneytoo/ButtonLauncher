@@ -6,6 +6,7 @@
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
     <application
         android:allowBackup="true"
@@ -46,6 +47,13 @@
         <activity
             android:name=".ConfigActivity"
             android:label="Button Launcher Config">
+        </activity>
+
+        <activity android:name=".AutoTimer"
+            android:label="Auto Timer">
+            <intent-filter>
+                <action android:name="com.brouken.wear.butcher.intent.action.AUTO_TIMER" />
+            </intent-filter>
         </activity>
     </application>
 

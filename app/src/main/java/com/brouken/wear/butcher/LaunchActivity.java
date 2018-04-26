@@ -39,6 +39,7 @@ public class LaunchActivity extends WearableActivity {
 
     private boolean vibrate = true;
     private int timeout = 3000;
+    private int timer = 3;
 
     private boolean longPressed = false;
 
@@ -383,5 +384,6 @@ public class LaunchActivity extends WearableActivity {
 
         vibrate = sharedPreferences.getBoolean("vibrate", vibrate);
         timeout = Integer.parseInt(sharedPreferences.getString("timeout", Integer.toString(timeout)));
+        timer = sharedPreferences.getInt("autoTimer", timer);
     }
 }

@@ -40,10 +40,12 @@ public class AppPickerActivity extends Activity {
 
         pref = getIntent().getStringExtra("pref");
 
+        // Add all launchable apps
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         pkgAppsList = mContext.getPackageManager().queryIntentActivities( mainIntent, 0);
 
+        // Add "Google"
         Intent assistIntent = new Intent(Intent.ACTION_ASSIST);
         assistIntent.addCategory(Intent.CATEGORY_DEFAULT);
         List<ResolveInfo> pkgAssistAppsList = mContext.getPackageManager().queryIntentActivities( assistIntent, 0);
@@ -57,12 +59,18 @@ public class AppPickerActivity extends Activity {
             break;
         }
 
+        // Remove Button Launcher from list
         Iterator<ResolveInfo> resolveInfoIterator = pkgAppsList.iterator();
         while (resolveInfoIterator.hasNext())  {
             ResolveInfo resolveInfo = resolveInfoIterator.next();
             if (resolveInfo.activityInfo.packageName.equals(getPackageName()))
                 resolveInfoIterator.remove();
         }
+
+        // TODO: don't add if not set
+        Intent timerIntent = new Intent("com.brouken.wear.butcher.intent.action.AUTO_TIMER", null);
+        List<ResolveInfo> timerAppList = mContext.getPackageManager().queryIntentActivities(timerIntent, 0);
+        pkgAppsList.addAll(timerAppList);
 
         Collections.sort(pkgAppsList, new ResolveInfo.DisplayNameComparator(mContext.getPackageManager()));
         pkgAppsList.add(0, null);

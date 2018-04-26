@@ -46,6 +46,7 @@ public class ConfigActivity extends Activity {
 
             setupPrefs();
             setupPrefTimeout();
+            setupPrefTimer();
         }
 
         @Override
@@ -237,6 +238,22 @@ public class ConfigActivity extends Activity {
             sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
                     PreferenceManager.getDefaultSharedPreferences(getContext()).getString(preference.getKey(), "3000"));
         }
+
+        private void setupPrefTimer() {
+            Preference preference = findPreference("autoTimer");
+
+            preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener2);
+            sBindPreferenceSummaryToValueListener2.onPreferenceChange(preference, PreferenceManager.getDefaultSharedPreferences(getContext()).getInt(preference.getKey(), 3));
+        }
+
+        private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener2 = new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object value) {
+                int intValue = (int) value;
+                preference.setSummary(intValue + " min");
+                return true;
+            }
+        };
 
         private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
             @Override

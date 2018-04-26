@@ -15,6 +15,15 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="Extra shortcuts">
+        <com.brouken.wear.butcher.NumberPickerPreference
+            android:key="autoTimer"
+            android:title="Auto Timer"
+            android:defaultValue="3"
+            android:icon="@drawable/ic_timer"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="Configuration">
         <ListPreference
             android:key="timeout"
