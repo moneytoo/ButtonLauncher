@@ -15,7 +15,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Extra shortcuts">
+        android:title="Extra actions">
         <com.brouken.wear.butcher.NumberPickerPreference
             android:key="autoTimer"
             android:title="Auto Timer"

@@ -61,6 +61,8 @@ public class HelpActivity extends WearableActivity {
                 "\n" +
                 "Map your other watch button " + labelSecondary + "in system settings to Button Launcher to use the other set of shortcut combos. Unfortunately it is not possible to detect what specific custom button was used for launch.\n" +
                 "\n" +
-                "The Default action is what app will be launched if no secondary button is pressed (short or long) before time for launch runs out.");
+                "The Default action is what app will be launched if no secondary button is pressed (short or long) before time for launch runs out.\n" +
+                "\n" +
+                "Auto Timer is an additional action that can be executed. Upon launch, it will always start a timer with the configured time (without any confirmation).");
     }
 }
