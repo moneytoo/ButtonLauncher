@@ -36,6 +36,7 @@ public class LaunchActivity extends WearableActivity {
 
     private boolean launchedViaAssist = false;
     private boolean launchedViaCustom = false;
+    private boolean launchedViaLauncher = false;
 
     private boolean vibrate = true;
     private int timeout = 3000;
@@ -69,6 +70,13 @@ public class LaunchActivity extends WearableActivity {
         handleStart(getIntent());
 
         mLaunchActions = new LaunchActions(this, launchedViaAssist);
+
+        if (launchedViaLauncher ||
+                mLaunchActions.hasOnlyDefaultAction() && !mLaunchActions.hasDefaultAction()) {
+            Intent config = new Intent(this, ConfigActivity.class);
+            startActivity(config);
+            finish();
+        }
 
         if (!isFinishing()) {
             setupCircles();
@@ -194,8 +202,6 @@ public class LaunchActivity extends WearableActivity {
     }
 
     private void handleStart(Intent intent) {
-        boolean launchedViaLauncher = false;
-
         String action = intent.getAction();
         if (action != null) {
             if (action.equals(Intent.ACTION_ASSIST))
@@ -204,12 +210,6 @@ public class LaunchActivity extends WearableActivity {
                 launchedViaLauncher = true;
         } else
             launchedViaCustom = true;
-
-        if (launchedViaLauncher) {
-            Intent config = new Intent(this, ConfigActivity.class);
-            startActivity(config);
-            finish();
-        }
     }
 
     private Drawable getDrawableForButton(int button, boolean longPressed) {
