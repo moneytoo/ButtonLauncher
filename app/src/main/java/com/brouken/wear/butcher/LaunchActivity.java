@@ -194,7 +194,7 @@ public class LaunchActivity extends WearableActivity {
 
         String action = intent.getAction();
         if (action != null) {
-            if (action.equals(Intent.ACTION_ASSIST)) {
+            if (action.equals(Intent.ACTION_ASSIST) || action.equals("android.intent.action.VOICE_ASSIST")) {
                 final String app = mLaunchActions.getAppForButton(0, true);
                 launchApp(app, false);
             }
@@ -204,7 +204,7 @@ public class LaunchActivity extends WearableActivity {
     private void handleStart(Intent intent) {
         String action = intent.getAction();
         if (action != null) {
-            if (action.equals(Intent.ACTION_ASSIST))
+            if (action.equals(Intent.ACTION_ASSIST) || action.equals("android.intent.action.VOICE_ASSIST"))
                 launchedViaAssist = true;
             else if (action.equals(Intent.ACTION_MAIN))
                 launchedViaLauncher = true;

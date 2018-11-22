@@ -46,7 +46,7 @@ public class AppPickerActivity extends Activity {
         pkgAppsList = mContext.getPackageManager().queryIntentActivities( mainIntent, 0);
 
         // Add "Google"
-        Intent assistIntent = new Intent(Intent.ACTION_ASSIST);
+        Intent assistIntent = new Intent("android.intent.action.VOICE_ASSIST");
         assistIntent.addCategory(Intent.CATEGORY_DEFAULT);
         List<ResolveInfo> pkgAssistAppsList = mContext.getPackageManager().queryIntentActivities( assistIntent, 0);
 
@@ -123,7 +123,7 @@ public class AppPickerActivity extends Activity {
             String category = Intent.CATEGORY_LAUNCHER;
 
             if (isAssistApp(pkg, cls)) {
-                action = Intent.ACTION_ASSIST;
+                action = "android.intent.action.VOICE_ASSIST";
                 category = Intent.CATEGORY_DEFAULT;
             }
 
