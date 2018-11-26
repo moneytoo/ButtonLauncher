@@ -60,6 +60,13 @@
                 <action android:name="com.brouken.wear.butcher.intent.action.AUTO_TIMER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".NoActionActivity"
+            android:label="Blank action">
+            <intent-filter>
+                <action android:name="com.brouken.wear.butcher.intent.action.NO_ACTION" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

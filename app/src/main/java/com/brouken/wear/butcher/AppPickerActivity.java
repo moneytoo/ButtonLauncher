@@ -72,6 +72,10 @@ public class AppPickerActivity extends Activity {
         List<ResolveInfo> timerAppList = mContext.getPackageManager().queryIntentActivities(timerIntent, 0);
         pkgAppsList.addAll(timerAppList);
 
+        Intent noActionIntent = new Intent("com.brouken.wear.butcher.intent.action.NO_ACTION", null);
+        List<ResolveInfo> noActionAppList = mContext.getPackageManager().queryIntentActivities(noActionIntent, 0);
+        pkgAppsList.addAll(noActionAppList);
+
         Collections.sort(pkgAppsList, new ResolveInfo.DisplayNameComparator(mContext.getPackageManager()));
         pkgAppsList.add(0, null);
 
