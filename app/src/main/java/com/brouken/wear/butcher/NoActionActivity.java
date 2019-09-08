@@ -2,7 +2,7 @@ package com.brouken.wear.butcher;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class NoActionActivity extends Activity {
     @Override

@@ -35,8 +35,6 @@ public class LaunchActivity extends WearableActivity {
     private ObjectAnimator animator;
 
     private boolean launchedViaAssist = false;
-    private boolean launchedViaCustom = false;
-    private boolean launchedViaLauncher = false;
 
     private boolean vibrate = true;
     private int timeout = 3000;
@@ -71,8 +69,7 @@ public class LaunchActivity extends WearableActivity {
 
         mLaunchActions = new LaunchActions(this, launchedViaAssist);
 
-        if (launchedViaLauncher ||
-                mLaunchActions.hasOnlyDefaultAction() && !mLaunchActions.hasDefaultAction()) {
+        if (mLaunchActions.hasOnlyDefaultAction() && !mLaunchActions.hasDefaultAction()) {
             Intent config = new Intent(this, ConfigActivity.class);
             startActivity(config);
             finish();
@@ -206,10 +203,7 @@ public class LaunchActivity extends WearableActivity {
         if (action != null) {
             if (action.equals(Intent.ACTION_ASSIST) || action.equals("android.intent.action.VOICE_ASSIST"))
                 launchedViaAssist = true;
-            else if (action.equals(Intent.ACTION_MAIN))
-                launchedViaLauncher = true;
-        } else
-            launchedViaCustom = true;
+        }
     }
 
     private Drawable getDrawableForButton(int button, boolean longPressed) {

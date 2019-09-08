@@ -24,39 +24,17 @@ public class RingDrawable extends GradientDrawable {
     public RingDrawable(GradientDrawable.Orientation orientation, int[] colors, int innerRadius, int thickness, float innerRadiusRatio, float thicknessRatio) {
         this(orientation, colors);
         try {
-            //setInnerRadius(innerRadius);
-            setThickness(thickness);
-            //setInnerRadiusRatio(innerRadiusRatio);
-            //setThicknessRatio(thicknessRatio);
+            setRingThickness(thickness);
             setUseLevel(true);
         } catch (Exception e) {
-            // fail silently - change to your own liking
             e.printStackTrace();
         }
     }
 
-    public void setInnerRadius(int radius) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        if (mGradientState == null) mGradientState = resolveGradientState();
-        Field innerRadius = resolveField(mGradientState, "mInnerRadius");
-        innerRadius.setInt(getConstantState(), radius);
-    }
-
-    public void setThickness(int thicknessValue) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+    public void setRingThickness(int thicknessValue) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         if (mGradientState == null) mGradientState = resolveGradientState();
         Field thickness = resolveField(mGradientState, "mThickness");
         thickness.setInt(getConstantState(), thicknessValue);
-    }
-
-    public void setInnerRadiusRatio(float ratio) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        if (mGradientState == null) mGradientState = resolveGradientState();
-        Field innerRadiusRatio = resolveField(mGradientState, "mInnerRadiusRatio");
-        innerRadiusRatio.setFloat(getConstantState(), ratio);
-    }
-
-    public void setThicknessRatio(float ratio) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        if (mGradientState == null) mGradientState = resolveGradientState();
-        Field thicknessRatio = resolveField(mGradientState, "mThicknessRatio");
-        thicknessRatio.setFloat(getConstantState(), ratio);
     }
 
     public void setUseLevel(boolean level) throws SecurityException, /*NoSuchFieldException,*/ IllegalArgumentException/*, IllegalAccessException*/ {
